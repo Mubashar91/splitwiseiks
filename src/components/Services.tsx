@@ -1,34 +1,37 @@
 import { Instagram, HeadphonesIcon, FolderKanban, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
-
-const services = [
-  {
-    icon: Instagram,
-    title: "Social Media Management",
-    description: "Content creation, scheduling, and engagement management across all platforms",
-    benefit: "3-5x increase in engagement rates"
-  },
-  {
-    icon: HeadphonesIcon,
-    title: "Customer Support",
-    description: "Email, chat, and phone support with native language proficiency",
-    benefit: "95%+ customer satisfaction scores"
-  },
-  {
-    icon: FolderKanban,
-    title: "Back-Office & Admin",
-    description: "Data entry, email management, calendar coordination, and document processing",
-    benefit: "Save 20+ hours per week"
-  },
-  {
-    icon: TrendingUp,
-    title: "SEO & Content",
-    description: "Blog writing, keyword research, on-page optimization, and link building",
-    benefit: "2x organic traffic growth"
-  }
-];
+import { useTranslation } from "react-i18next";
 
 export const Services = () => {
+  const { t } = useTranslation();
+
+  const services = [
+    {
+      icon: Instagram,
+      title: t('services.socialMedia.title'),
+      description: t('services.socialMedia.description'),
+      benefit: t('services.socialMedia.benefit')
+    },
+    {
+      icon: HeadphonesIcon,
+      title: t('services.customerSupport.title'),
+      description: t('services.customerSupport.description'),
+      benefit: t('services.customerSupport.benefit')
+    },
+    {
+      icon: FolderKanban,
+      title: t('services.backOffice.title'),
+      description: t('services.backOffice.description'),
+      benefit: t('services.backOffice.benefit')
+    },
+    {
+      icon: TrendingUp,
+      title: t('services.seo.title'),
+      description: t('services.seo.description'),
+      benefit: t('services.seo.benefit')
+    }
+  ];
+
   return (
     <motion.section 
       id="services"
@@ -79,8 +82,8 @@ export const Services = () => {
           <span className="inline-block px-3 py-1.5 sm:px-4 sm:py-2 md:px-5 md:py-2.5 bg-gold text-foreground text-xs sm:text-sm md:text-base font-semibold rounded-full mb-3 sm:mb-4">
             Our Core Services
           </span>
-          <h2 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-3 sm:mb-4 md:mb-5 px-2">
-            What We <span className="text-gold">Handle</span> For You
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center">
+            {t('services.title')}
           </h2>
           <p className="text-base sm:text-lg md:text-lg lg:text-xl text-muted-foreground max-w-3xl leading-relaxed px-2">
             From customer support to content creation — we've got the talent you need to scale.
@@ -163,7 +166,9 @@ export const Services = () => {
                   </p>
                   <div className="inline-flex items-center px-3 py-1.5 sm:px-4 sm:py-2 md:px-3.5 md:py-1.5 lg:px-4 lg:py-2 bg-gold/10 border border-gold/30 rounded-full text-gold text-xs sm:text-sm md:text-xs lg:text-sm font-semibold group-hover:bg-gold group-hover:text-foreground group-hover:border-gold transition-all duration-500">
                     <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-3.5 md:h-3.5 lg:w-4 lg:h-4 mr-1.5 sm:mr-2 md:mr-1.5 lg:mr-2" />
-                    <span className="leading-none">{service.benefit}</span>
+                    <p className="text-muted-foreground text-center max-w-2xl mx-auto">
+                      {t('services.subtitle')}
+                    </p>
                   </div>
                 </div>
               </div>

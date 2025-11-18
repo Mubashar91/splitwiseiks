@@ -2,11 +2,13 @@ import { Button } from "@/components/ui/button";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { ArrowRight, Calendar, Sparkles, TrendingUp, Users, Star, Award } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 // Using Unsplash image - aesthetic laptop workspace, no people
 const heroImage = "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200&h=900&fit=crop&q=80";
 
 export const Hero = () => {
+  const { t } = useTranslation();
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -98,7 +100,7 @@ export const Hero = () => {
               >
                 <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </motion.div>
-              Trusted by 200+ Growing Businesses
+              {t('hero.tagline')}
             </motion.div>
             
             <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-bold mb-5 sm:mb-6 md:mb-7 leading-[1.15] sm:leading-[1.12] md:leading-[1.1] tracking-tight">
@@ -108,42 +110,12 @@ export const Hero = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.5 }}
               >
-                Save{" "}
-                <span className="relative inline-block">
-                  <span className="bg-gradient-to-r from-gold via-yellow-400 to-gold bg-clip-text text-transparent animate-gradient">
-                    70%
-                  </span>
-                  <motion.span
-                    className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-gold to-yellow-400 rounded-full"
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ duration: 0.6, delay: 0.8 }}
-                  />
-                </span>
-                {" "}on Operations.
+                {t('hero.title')}
               </motion.span>
-              <br className="hidden xs:block" />
-              <motion.span
-                className="block xs:inline"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.6 }}
-              >
-                <span className="bg-gradient-to-r from-gold via-yellow-400 to-gold bg-clip-text text-transparent animate-gradient">Scale Faster</span> with Virtual Assistants.
-              </motion.span>
-              <br className="hidden xs:block" />
-              <motion.span
-                className="block xs:inline-block text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl font-light text-muted-foreground italic mt-3 sm:mt-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.7 }}
-              >
-                But Good.
-              </motion.span>
-      </h1>
+            </h1>
             
             <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-7 md:mb-8 leading-relaxed max-w-xl">
-              Reliable VAs • Native Quality Control • No Overhead
+              {t('hero.subtitle')}
             </p>
             
             <motion.div
@@ -180,8 +152,7 @@ export const Hero = () => {
                 
                 <span className="relative z-10 flex items-center justify-center gap-2">
                   <Calendar className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" aria-hidden="true" />
-                  <span className="hidden sm:inline font-semibold group-hover:tracking-wide transition-all duration-300">Book a Free Consultation (15 min)</span>
-                  <span className="sm:hidden font-semibold group-hover:tracking-wide transition-all duration-300">Book Free Consultation</span>
+                  <span className="font-semibold group-hover:tracking-wide transition-all duration-300">{t('hero.ctaPrimary')}</span>
                   <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-2 group-hover:scale-110 transition-all duration-300" aria-hidden="true" />
                 </span>
               </Button>
@@ -389,7 +360,7 @@ export const Hero = () => {
                     >
                       <Users className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-gold/70 group-hover/stat:text-gold transition-colors" aria-hidden="true" />
                       <div className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold bg-gradient-to-r from-gold to-yellow-400 bg-clip-text text-transparent">200+</div>
-                      <div className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground font-medium">Clients</div>
+                      <div className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground font-medium">{t('hero.stats.clients')}</div>
                     </motion.div>
                   </motion.div>
                   
@@ -406,7 +377,7 @@ export const Hero = () => {
                     >
                       <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-gold/70 group-hover/stat:text-gold transition-colors" aria-hidden="true" />
                       <div className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold bg-gradient-to-r from-gold to-amber-400 bg-clip-text text-transparent">70%</div>
-                      <div className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground font-medium">Cost Saved</div>
+                      <div className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground font-medium">{t('hero.stats.costSaved')}</div>
                     </motion.div>
                   </motion.div>
                   
@@ -423,7 +394,7 @@ export const Hero = () => {
                     >
                       <Star className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-gold/70 group-hover/stat:text-gold transition-colors fill-gold/20" aria-hidden="true" />
                       <div className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold bg-gradient-to-r from-yellow-400 to-gold bg-clip-text text-transparent">4.9/5</div>
-                      <div className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground font-medium">Rating</div>
+                      <div className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground font-medium">{t('hero.stats.rating')}</div>
                     </motion.div>
                   </motion.div>
                 </div>
