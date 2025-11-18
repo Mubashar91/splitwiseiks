@@ -80,13 +80,13 @@ export const Services = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
         >
           <span className="inline-block px-3 py-1.5 sm:px-4 sm:py-2 md:px-5 md:py-2.5 bg-gold text-foreground text-xs sm:text-sm md:text-base font-semibold rounded-full mb-3 sm:mb-4">
-            Our Core Services
+            {t('nav.services')}
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center">
             {t('services.title')}
           </h2>
           <p className="text-base sm:text-lg md:text-lg lg:text-xl text-muted-foreground max-w-3xl leading-relaxed px-2">
-            From customer support to content creation — we've got the talent you need to scale.
+            {t('services.subtitle')}
           </p>
         </motion.div>
 
@@ -166,9 +166,7 @@ export const Services = () => {
                   </p>
                   <div className="inline-flex items-center px-3 py-1.5 sm:px-4 sm:py-2 md:px-3.5 md:py-1.5 lg:px-4 lg:py-2 bg-gold/10 border border-gold/30 rounded-full text-gold text-xs sm:text-sm md:text-xs lg:text-sm font-semibold group-hover:bg-gold group-hover:text-foreground group-hover:border-gold transition-all duration-500">
                     <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-3.5 md:h-3.5 lg:w-4 lg:h-4 mr-1.5 sm:mr-2 md:mr-1.5 lg:mr-2" />
-                    <p className="text-muted-foreground text-center max-w-2xl mx-auto">
-                      {t('services.subtitle')}
-                    </p>
+                    <span className="leading-none">{service.benefit}</span>
                   </div>
                 </div>
               </div>

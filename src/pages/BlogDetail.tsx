@@ -1,6 +1,7 @@
 import { motion, useScroll, useSpring } from "framer-motion";
 import { Calendar, Clock, User, ArrowLeft, Twitter, Linkedin, Link as LinkIcon } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Navbar } from "@/components/Navbar";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, AreaChart, Area, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from "recharts";
 
@@ -89,7 +90,7 @@ const blog1TotalsPie = (() => {
 
 const blog3WithMargin = blog3ScalingData.map(d => ({ ...d, margin: Math.round((d.profit / d.revenue) * 100) }));
 
-const blogPosts: BlogPost[] = [
+const blogPostsEn: BlogPost[] = [
   {
     id: 1,
     title: "How Virtual Assistants Can Save Your Business 70% on Operational Costs",
@@ -393,29 +394,72 @@ const blogPosts: BlogPost[] = [
   }
 ];
 
+const blogPostsDe: BlogPost[] = [
+  {
+    id: 1,
+    title: "Wie virtuelle Assistenten Ihre Betriebskosten um 70 % senken können",
+    excerpt: "Erfahren Sie, welche Strategien erfolgreiche Unternehmen nutzen, um ihre Kosten drastisch zu senken und gleichzeitig die Qualität mit virtuellen Assistenten hochzuhalten.",
+    content: blogPostsEn[0].content,
+    author: "Michael Schmidt",
+    date: "15. März 2024",
+    readTime: "12 Min. Lesezeit",
+    category: "Kostenoptimierung",
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=500&fit=crop",
+    charts: blogPostsEn[0].charts,
+  },
+  {
+    id: 2,
+    title: "5 Aufgaben, die Sie noch heute an einen virtuellen Assistenten auslagern sollten",
+    excerpt: "Verschwenden Sie keine Zeit mehr mit Routineaufgaben. Erfahren Sie, welche Tätigkeiten Sie sofort abgeben sollten, um mehr Raum für strategische Arbeit zu schaffen.",
+    content: blogPostsEn[1].content,
+    author: "Sarah Weber",
+    date: "10. März 2024",
+    readTime: "4 Min. Lesezeit",
+    category: "Produktivität",
+    image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=500&fit=crop",
+    charts: blogPostsEn[1].charts,
+  },
+  {
+    id: 3,
+    title: "Der vollständige Leitfaden zum Skalieren Ihres Unternehmens mit virtuellen Teams",
+    excerpt: "Lernen Sie den bewährten Rahmen kennen, mit dem leistungsstarke virtuelle Teams aufgebaut und geführt werden, die echte Ergebnisse liefern.",
+    content: blogPostsEn[2].content,
+    author: "Thomas Müller",
+    date: "5. März 2024",
+    readTime: "7 Min. Lesezeit",
+    category: "Wachstum",
+    image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=500&fit=crop",
+    charts: blogPostsEn[2].charts,
+  },
+];
+
 const BlogDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  
-  const post = blogPosts.find(p => p.id === Number(id));
-  const currentIndex = blogPosts.findIndex(p => p.id === Number(id));
-  const prevPost = currentIndex > 0 ? blogPosts[currentIndex - 1] : undefined;
-  const nextPost = currentIndex >= 0 && currentIndex < blogPosts.length - 1 ? blogPosts[currentIndex + 1] : undefined;
+  const { t } = useTranslation();
 
   // Reading progress bar
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 20, restDelta: 0.001 });
 
+  const currentLang = window.location.pathname.match(/^\/(en|de)\b/)?.[1] || 'en';
+  const posts = currentLang === 'de' ? blogPostsDe : blogPostsEn;
+
+  const post = posts.find(p => p.id === Number(id));
+  const currentIndex = posts.findIndex(p => p.id === Number(id));
+  const prevPost = currentIndex > 0 ? posts[currentIndex - 1] : undefined;
+  const nextPost = currentIndex >= 0 && currentIndex < posts.length - 1 ? posts[currentIndex + 1] : undefined;
+
   if (!post) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4">Blog Post Not Found</h1>
+          <h1 className="text-4xl font-bold mb-4">{t("blog.detail.notFound")}</h1>
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate(`/${currentLang}`)}
             className="text-gold hover:underline"
           >
-            Return to Home
+            {t("blog.detail.returnHome")}
           </button>
         </div>
       </div>
@@ -541,7 +585,7 @@ const BlogDetail = () => {
         <div className="container mx-auto px-4 sm:px-5 md:px-8 lg:px-12 xl:px-16">
           {/* Back button */}
           <motion.button
-            onClick={() => navigate('/')}
+            onClick={() => navigate(`/${currentLang}`)}
             className="mt-11 mb-6 sm:mb-8 inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-card/50 backdrop-blur-sm border-2 border-border/50 hover:border-gold/50 rounded-lg sm:rounded-xl text-foreground hover:text-gold transition-all duration-300 font-semibold group shadow-md hover:shadow-lg hover:shadow-gold/10 text-sm sm:text-base"
             whileHover={{ x: -4, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -550,7 +594,7 @@ const BlogDetail = () => {
             transition={{ duration: 0.5 }}
           >
             <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 group-hover:-translate-x-1 transition-transform" />
-            <span>Back to Home</span>
+            <span>{t("blog.detail.backToHome")}</span>
           </motion.button>
 
           <article className="max-w-5xl mx-auto">
@@ -588,7 +632,7 @@ const BlogDetail = () => {
                     <h4 className="text-lg sm:text-xl font-bold text-foreground">{post.author}</h4>
                     <span className="text-xs sm:text-sm text-muted-foreground">• {post.date} • {post.readTime}</span>
                   </div>
-                  <p className="mt-1 text-sm sm:text-base text-muted-foreground">Insights curated by our team to help you scale with virtual assistants.</p>
+                  <p className="mt-1 text-sm sm:text-base text-muted-foreground">{t("blog.detail.authorDescription")}</p>
                 </div>
               </div>
             </motion.div>
@@ -654,7 +698,7 @@ const BlogDetail = () => {
                 }}
                 className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-border/60 hover:border-gold/60 text-foreground hover:text-gold transition"
               >
-                <Twitter className="w-4 h-4" /> Share on X
+                <Twitter className="w-4 h-4" /> {t("blog.detail.shareX")}
               </button>
               <button
                 onClick={() => {
@@ -665,7 +709,7 @@ const BlogDetail = () => {
                 }}
                 className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-border/60 hover:border-gold/60 text-foreground hover:text-gold transition"
               >
-                <Linkedin className="w-4 h-4" /> Share on LinkedIn
+                <Linkedin className="w-4 h-4" /> {t("blog.detail.shareLinkedIn")}
               </button>
               <button
                 onClick={async () => {
@@ -676,9 +720,9 @@ const BlogDetail = () => {
                   }
                 }}
                 className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-border/60 hover:border-gold/60 text-foreground hover:text-gold transition"
-                aria-label="Copy link"
+                aria-label={t("blog.detail.copyLink")}
               >
-                <LinkIcon className="w-4 h-4" /> Copy link
+                <LinkIcon className="w-4 h-4" /> {t("blog.detail.copyLink")}
               </button>
             </div>
 
@@ -740,7 +784,7 @@ const BlogDetail = () => {
               <div className="mt-4 sm:mt-6 mb-6 sm:mb-8 flex flex-col sm:flex-row gap-3 sm:gap-4">
                 {prevPost && (
                   <button
-                    onClick={() => navigate(`/blog/${prevPost.id}`)}
+                    onClick={() => navigate(`/${currentLang}/blog/${prevPost.id}`)}
                     className="flex-1 text-left px-4 py-3 rounded-lg border border-border/60 hover:border-gold/60 transition"
                   >
                     ← {prevPost.title}
@@ -748,7 +792,7 @@ const BlogDetail = () => {
                 )}
                 {nextPost && (
                   <button
-                    onClick={() => navigate(`/blog/${nextPost.id}`)}
+                    onClick={() => navigate(`/${currentLang}/blog/${nextPost.id}`)}
                     className="flex-1 text-right px-4 py-3 rounded-lg border border-border/60 hover:border-gold/60 transition"
                   >
                     {nextPost.title} →
@@ -769,14 +813,14 @@ const BlogDetail = () => {
               
               <div className="relative z-10">
                 <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-3 sm:mb-4 text-foreground">
-                  Ready to Transform Your Business?
+                  {t("blog.detail.readyToTransform")}
                 </h3>
                 <p className="text-sm sm:text-base md:text-lg text-muted-foreground mb-5 sm:mb-6 max-w-2xl mx-auto leading-relaxed">
-                  Book a free consultation and discover how virtual assistants can help you scale.
+                  {t("blog.detail.ctaDescription")}
                 </p>
                 <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-gold text-foreground font-semibold text-sm sm:text-base rounded-lg sm:rounded-xl hover:bg-gold/90 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
-                  <span className="hidden sm:inline">Book Free Consultation →</span>
-                  <span className="sm:hidden">Get Started →</span>
+                  <span className="hidden sm:inline">{t("blog.detail.bookConsultation")}</span>
+                  <span className="sm:hidden">{t("blog.detail.getStarted")}</span>
                 </button>
               </div>
             </motion.div>
@@ -788,12 +832,15 @@ const BlogDetail = () => {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="mt-12 sm:mt-16 pt-10 sm:pt-12 border-t border-border"
             >
-              <h3 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8 text-foreground">More Articles</h3>
+              <h3 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8 text-foreground">{t("blog.detail.moreArticles")}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                {blogPosts.filter(p => p.id !== post.id).slice(0, 2).map((relatedPost) => (
+                {posts
+                  .filter((p: BlogPost) => p.id !== post.id)
+                  .slice(0, 2)
+                  .map((relatedPost: BlogPost) => (
                   <motion.div
                     key={relatedPost.id}
-                    onClick={() => navigate(`/blog/${relatedPost.id}`)}
+                    onClick={() => navigate(`/${currentLang}/blog/${relatedPost.id}`)}
                     className="group cursor-pointer bg-card border border-border/50 rounded-lg sm:rounded-xl overflow-hidden hover:border-gold/50 hover:shadow-lg hover:shadow-gold/10 transition-all duration-300"
                     whileHover={{ y: -4 }}
                   >

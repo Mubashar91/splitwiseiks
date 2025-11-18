@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Check, Star, Sparkles, Calendar, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 // Constants
 const MAX_VA_COUNT = 10;
@@ -66,6 +67,7 @@ const plans: PricingPlan[] = [
 ];
 
 export const Pricing = () => {
+  const { t } = useTranslation();
   const [vaCount, setVaCount] = useState(1);
   
   const calculateDiscount = (count: number) => {
@@ -143,28 +145,28 @@ export const Pricing = () => {
                     >
                       <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-gold" />
                     </motion.div>
-                    <span className="text-gold font-bold text-sm sm:text-base uppercase tracking-wide">Limited Time Offer</span>
+                    <span className="text-gold font-bold text-sm sm:text-base uppercase tracking-wide">{t("pricing.bannerBadge")}</span>
                   </motion.div>
                   
                   <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-2">
-                    Start with a <span className="text-gold">Free 15-Min Call</span>
+                    {t("pricing.bannerTitle")}
                   </h3>
                   <p className="text-base sm:text-lg text-muted-foreground mb-4">
-                    Plus get <span className="font-semibold text-foreground">1 Week Free Trial</span> • No credit card required
+                    {t("pricing.bannerSubtitle")}
                   </p>
                   
                   <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-sm sm:text-base">
                     <div className="flex items-center gap-2">
                       <Check className="w-4 h-4 sm:w-5 sm:h-5 text-gold" />
-                      <span className="text-muted-foreground">No commitment</span>
+                      <span className="text-muted-foreground">{t("pricing.bannerPoints.noCommitment")}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Check className="w-4 h-4 sm:w-5 sm:h-5 text-gold" />
-                      <span className="text-muted-foreground">Cancel anytime</span>
+                      <span className="text-muted-foreground">{t("pricing.bannerPoints.cancelAnytime")}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Check className="w-4 h-4 sm:w-5 sm:h-5 text-gold" />
-                      <span className="text-muted-foreground">Full access</span>
+                      <span className="text-muted-foreground">{t("pricing.bannerPoints.fullAccess")}</span>
                     </div>
                   </div>
                 </div>
@@ -183,7 +185,7 @@ export const Pricing = () => {
                   >
                     <span className="relative z-10 flex items-center gap-2">
                       <Calendar className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-                      Book Free Call
+                      {t("pricing.bannerTitle")}
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </span>
                   </Button>
@@ -204,13 +206,13 @@ export const Pricing = () => {
             className="inline-block px-3 py-1.5 sm:px-4 sm:py-2 bg-gold text-foreground text-xs sm:text-sm font-bold rounded-full mb-3 sm:mb-4 shadow-md"
             whileHover={{ scale: 1.05 }}
           >
-            Transparent Pricing
+            {t("pricing.sectionBadge")}
           </motion.span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 text-foreground leading-tight">
-            Simple, <span className="text-gold">Transparent</span> Pricing
+            {t("pricing.sectionTitle")}
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl leading-relaxed">
-            Choose the plan that fits your needs. Scale up or down anytime. No hidden fees.
+            {t("pricing.sectionDescription")}
           </p>
         </motion.div>
 
@@ -224,10 +226,10 @@ export const Pricing = () => {
         >
           <div className="text-center mb-3 sm:mb-4">
             <label className="block text-base sm:text-lg lg:text-xl font-bold mb-2 text-foreground">
-              How many VAs do you need?
+              {t("pricing.vaCountLabel")}
             </label>
             <span className="text-xs sm:text-sm text-muted-foreground px-2">
-              Select the number of virtual assistants for your team
+              {t("pricing.vaCountHelper")}
             </span>
           </div>
           
@@ -285,7 +287,7 @@ export const Pricing = () => {
             transition={{ delay: 0.2 }}
           >
             <span className="inline-block px-3 sm:px-4 py-1.5 sm:py-2 bg-gold/10 text-foreground text-xs sm:text-sm font-semibold rounded-full border border-gold/30 shadow-sm">
-              Starting from €{avgPricePerVA}/month per VA • €{Math.round(avgPricePerVA / (avgHoursPerWeek * 4))}/hour
+              {t("pricing.startingFrom", { price: avgPricePerVA, hourly: Math.round(avgPricePerVA / (avgHoursPerWeek * 4)) })}
             </span>
           </motion.div>
 
@@ -299,8 +301,8 @@ export const Pricing = () => {
             >
               <p className="text-gold font-bold text-xs sm:text-sm md:text-base flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
                 <span className="text-base sm:text-lg" aria-hidden="true">🎉</span>
-                <span className="whitespace-nowrap">{Math.round(discount * 100)}% Bulk Discount Applied!</span>
-                <span className="whitespace-nowrap">You save €{savings}/month</span>
+                <span className="whitespace-nowrap">{t("pricing.bulkDiscount", { percent: Math.round(discount * 100) })}</span>
+                <span className="whitespace-nowrap">{t("pricing.bulkSavings", { amount: savings })}</span>
               </p>
             </motion.div>
           )}
@@ -313,7 +315,13 @@ export const Pricing = () => {
             >
               <p className="text-muted-foreground text-xs sm:text-sm flex items-center justify-center gap-1.5 flex-wrap">
                 <span>💡</span>
-                <span>Add {BULK_DISCOUNT_THRESHOLD - vaCount} more VA{BULK_DISCOUNT_THRESHOLD - vaCount > 1 ? 's' : ''} to unlock {Math.round(BULK_DISCOUNT_RATE * 100)}% discount</span>
+                <span>
+                  {t("pricing.bulkHint", {
+                    count: BULK_DISCOUNT_THRESHOLD - vaCount,
+                    suffix: BULK_DISCOUNT_THRESHOLD - vaCount > 1 ? 's' : '',
+                    percent: Math.round(BULK_DISCOUNT_RATE * 100),
+                  })}
+                </span>
               </p>
             </motion.div>
           )}
@@ -423,14 +431,14 @@ export const Pricing = () => {
                     <p className={`text-xs mt-2 ${
                       plan.highlighted ? 'text-foreground/60' : 'text-muted-foreground'
                     }`}>
-                      + €{plan.setupFee} setup fee
+                      {t("pricing.planSetupFee", { fee: plan.setupFee })}
                     </p>
                   ) : (
                     <p className={`text-xs mt-2 font-semibold flex items-center gap-1 ${
                       plan.highlighted ? 'text-foreground' : 'text-gold'
                     }`}>
                       <Check className="w-3.5 h-3.5" />
-                      No setup fee
+                      {t("pricing.planNoSetupFee")}
                     </p>
                   )}
                 </div>
@@ -475,7 +483,7 @@ export const Pricing = () => {
                 >
                   {/* Button shine effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover/btn:translate-x-[200%] transition-transform duration-700" aria-hidden="true" />
-                  <span className="relative">Get Started</span>
+                  <span className="relative">{t("pricing.button")}</span>
                 </Button>
               </div>
             </motion.div>
@@ -483,13 +491,13 @@ export const Pricing = () => {
         </div>
 
         <motion.p 
-    className="text-center text-muted-foreground mt-10 sm:mt-12 md:mt-16 lg:mt-20 max-w-3xl mx-auto leading-relaxed text-sm sm:text-base px-4"
-    initial={{ opacity: 0 }}
-    whileInView={{ opacity: 1 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.6, delay: 0.5 }}
-  >
-    All plans include full confidentiality agreements, secure data handling, and are billed monthly with no long-term contracts. Scale up or down anytime.
+          className="text-center text-muted-foreground mt-10 sm:mt-12 md:mt-16 lg:mt-20 max-w-3xl mx-auto leading-relaxed text-sm sm:text-base px-4"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+        >
+          {t("pricing.disclaimer")}
         </motion.p>
       </div>
     </motion.section>

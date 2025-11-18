@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface BlogPost {
   id: number;
@@ -14,7 +15,7 @@ interface BlogPost {
   image: string;
 }
 
-const blogPosts: BlogPost[] = [
+const blogPostsEn: BlogPost[] = [
   {
     id: 1,
     title: "How Virtual Assistants Can Save Your Business 70% on Operational Costs",
@@ -238,8 +239,82 @@ const blogPosts: BlogPost[] = [
   }
 ];
 
+const blogPostsDe: BlogPost[] = [
+  {
+    id: 1,
+    title: "Wie virtuelle Assistenten Ihre Betriebskosten um 70 % senken können",
+    excerpt: "Erfahren Sie, welche Strategien erfolgreiche Unternehmen nutzen, um ihre Kosten drastisch zu senken und gleichzeitig die Qualität mit virtuellen Assistenten hochzuhalten.",
+    content: blogPostsEn[0].content,
+    author: "Michael Schmidt",
+    date: "15. März 2024",
+    readTime: "5 Min. Lesezeit",
+    category: "Kostenoptimierung",
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=500&fit=crop"
+  },
+  {
+    id: 2,
+    title: "5 Aufgaben, die Sie noch heute an einen virtuellen Assistenten auslagern sollten",
+    excerpt: "Verschwenden Sie keine Zeit mehr mit Routineaufgaben. Erfahren Sie, welche Tätigkeiten Sie sofort abgeben sollten, um mehr Raum für strategische Arbeit zu schaffen.",
+    content: blogPostsEn[1].content,
+    author: "Sarah Weber",
+    date: "10. März 2024",
+    readTime: "4 Min. Lesezeit",
+    category: "Produktivität",
+    image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=500&fit=crop"
+  },
+  {
+    id: 3,
+    title: "Der vollständige Leitfaden zum Skalieren Ihres Unternehmens mit virtuellen Teams",
+    excerpt: "Lernen Sie den bewährten Rahmen kennen, mit dem leistungsstarke virtuelle Teams aufgebaut und geführt werden, die echte Ergebnisse liefern.",
+    content: blogPostsEn[2].content,
+    author: "Thomas Müller",
+    date: "5. März 2024",
+    readTime: "7 Min. Lesezeit",
+    category: "Wachstum",
+    image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=500&fit=crop"
+  },
+  {
+    id: 4,
+    title: "Remote-Work-Revolution: Warum virtuelle Assistenten 2024 unverzichtbar sind",
+    excerpt: "Die Zukunft der Arbeit ist da. Erfahren Sie, warum Unternehmen, die virtuelle Assistenten einsetzen, ihre Wettbewerber überholen.",
+    content: blogPostsEn[3].content,
+    author: "Anna Fischer",
+    date: "28. Februar 2024",
+    readTime: "6 Min. Lesezeit",
+    category: "Remote Work",
+    image: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=800&h=500&fit=crop"
+  },
+  {
+    id: 5,
+    title: "So onboarden Sie einen virtuellen Assistenten: Schritt-für-Schritt-Anleitung",
+    excerpt: "Bringen Sie Ihren neuen VA mit diesem umfassenden Onboarding-Framework, das erfolgreiche Unternehmen nutzen, schnell auf Flughöhe.",
+    content: blogPostsEn[4].content,
+    author: "Marcus Klein",
+    date: "20. Februar 2024",
+    readTime: "5 Min. Lesezeit",
+    category: "Management",
+    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=500&fit=crop"
+  },
+  {
+    id: 6,
+    title: "Virtuelle Assistenten vs. Festangestellte: Ein Kostenvergleich",
+    excerpt: "Wir zeigen die wahren Kosten einer Einstellung – die Zahlen werden Sie überraschen.",
+    content: blogPostsEn[5].content,
+    author: "Lisa Hoffmann",
+    date: "15. Februar 2024",
+    readTime: "6 Min. Lesezeit",
+    category: "Kostenanalyse",
+    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=500&fit=crop"
+  }
+];
+
 export const Blog = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { t } = useTranslation();
+
+  const currentLang = location.pathname.match(/^\/(en|de)\b/)?.[1] || "en";
+  const posts = currentLang === "de" ? blogPostsDe : blogPostsEn;
 
   return (
     <motion.section
@@ -260,20 +335,21 @@ export const Blog = () => {
           transition={{ duration: 0.6 }}
         >
           <span className="inline-block px-3 sm:px-4 py-1.5 sm:py-2 bg-gold/10 text-gold text-xs sm:text-sm font-semibold rounded-full mb-3 sm:mb-4">
-            Latest Insights
+            {t("blog.badge")}
           </span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 text-foreground">
-            Blog & <span className="text-gold">Resources</span>
-          </h2>
+          <h2 
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 text-foreground"
+            dangerouslySetInnerHTML={{ __html: t("blog.heading") }}
+          />
           <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground max-w-3xl leading-relaxed">
-            Expert tips, strategies, and insights to help you scale your business with virtual assistants.
+            {t("blog.description")}
           </p>
         </motion.div>
 
         {/* Blog Grid */}
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-            {blogPosts.map((post, index) => (
+            {posts.map((post: BlogPost, index: number) => (
             <motion.article
               key={post.id}
               initial={{ opacity: 0, y: 50 }}
@@ -281,7 +357,7 @@ export const Blog = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               className="group bg-card border border-border/50 rounded-xl sm:rounded-2xl overflow-hidden hover:border-gold/50 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)] transition-all duration-300 cursor-pointer w-full"
-              onClick={() => navigate(`/blog/${post.id}`)}
+              onClick={() => navigate(`/${currentLang}/blog/${post.id}`)}
               whileHover={{ y: -8 }}
             >
               {/* Image */}
@@ -320,10 +396,10 @@ export const Blog = () => {
                 </p>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-xs sm:text-sm text-muted-foreground">By {post.author}</span>
+                  <span className="text-xs sm:text-sm text-muted-foreground">{t("blog.by")} {post.author}</span>
                   <div className="flex items-center gap-1 sm:gap-2 text-gold font-semibold text-xs sm:text-sm group-hover:gap-2 sm:group-hover:gap-3 transition-all">
-                    <span className="hidden sm:inline">Read More</span>
-                    <span className="sm:hidden">Read</span>
+                    <span className="hidden sm:inline">{t("blog.readMore")}</span>
+                    <span className="sm:hidden">{t("blog.read")}</span>
                     <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
                   </div>
                 </div>

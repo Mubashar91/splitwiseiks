@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MessageCircle, Sparkles, Clock, CheckCircle2, Users, TrendingUp, Award } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 export const FinalCTA = () => {
+  const { t } = useTranslation();
   return (
     <motion.section 
       className="relative overflow-hidden py-12 sm:py-16 md:py-20 lg:py-24 xl:py-28 bg-gradient-to-br from-gold via-amber-500 to-yellow-600 z-60"
@@ -85,7 +87,7 @@ export const FinalCTA = () => {
               >
                 <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
               </motion.div>
-              <span className="whitespace-nowrap">Start Your Growth Journey Today</span>
+              <span className="whitespace-nowrap">{t("finalCta.badge")}</span>
               <div className="w-1.5 h-1.5 xs:w-2 xs:h-2 rounded-full bg-green-400 animate-pulse"></div>
             </div>
           </motion.div>
@@ -98,10 +100,10 @@ export const FinalCTA = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.1 }}
           >
-            <span className="block drop-shadow-lg">Ready to Scale</span>
+            <span className="block drop-shadow-lg">{t("finalCta.headlineLine1")}</span>
             <span className="relative inline-block mt-2 sm:mt-3">
               <span className="relative z-10 bg-gradient-to-r from-white via-amber-50 to-white bg-clip-text text-transparent drop-shadow-2xl">
-                Smarter?
+                {t("finalCta.headlineLine2")}
               </span>
               <motion.span 
                 className="absolute bottom-2 sm:bottom-3 left-0 w-full h-4 sm:h-5 bg-white/30 -z-0 rounded-full blur-sm"
@@ -121,16 +123,16 @@ export const FinalCTA = () => {
             transition={{ duration: 0.7, delay: 0.2 }}
           >
             <p className="text-xl sm:text-2xl md:text-3xl text-white/95 mb-8 leading-relaxed font-semibold drop-shadow-md">
-              Let's build your dedicated team in 48 hours
+              {t("finalCta.subheading")}
             </p>
             
             {/* Benefits list */}
             <div className="flex flex-wrap justify-center gap-3 sm:gap-4 md:gap-5 mt-8">
               {[
-                "No setup fees",
-                "7-day risk-free trial",
-                "Native English managers",
-                "24/7 support"
+                t("finalCta.benefits.noSetupFees"),
+                t("finalCta.benefits.trial"),
+                t("finalCta.benefits.nativeManagers"),
+                t("finalCta.benefits.support247"),
               ].map((benefit, index) => (
                 <motion.div
                   key={benefit}
@@ -162,7 +164,7 @@ export const FinalCTA = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gold/20 to-transparent -skew-x-12 transform translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
               <div className="absolute inset-0 bg-gradient-to-r from-gold/0 via-gold/10 to-gold/0 animate-pulse" />
               <span className="relative flex items-center gap-3">
-                <span>Book Free Strategy Session</span>
+                <span>{t("finalCta.primaryCta")}</span>
                 <ArrowRight className="h-5 w-5 sm:h-6 sm:w-6 group-hover:translate-x-2 transition-transform duration-300" />
               </span>
             </Button>
@@ -176,7 +178,7 @@ export const FinalCTA = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <span className="relative flex items-center gap-3">
                 <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 group-hover:rotate-12 transition-transform duration-300" />
-                <span>Quick WhatsApp Chat</span>
+                <span>{t("finalCta.secondaryCta")}</span>
               </span>
             </Button>
           </motion.div>
@@ -190,10 +192,10 @@ export const FinalCTA = () => {
             transition={{ duration: 0.7, delay: 0.35 }}
           >
             {[
-              { icon: Users, value: "200+", label: "Active Clients" },
-              { icon: TrendingUp, value: "3.5x", label: "Avg. ROI" },
-              { icon: Award, value: "98%", label: "Satisfaction" },
-              { icon: Clock, value: "48h", label: "Fast Start" }
+              { icon: Users, value: "200+", label: t("finalCta.stats.activeClients") },
+              { icon: TrendingUp, value: "3.5x", label: t("finalCta.stats.avgRoi") },
+              { icon: Award, value: "98%", label: t("finalCta.stats.satisfaction") },
+              { icon: Clock, value: "48h", label: t("finalCta.stats.fastStart") },
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}
@@ -223,8 +225,8 @@ export const FinalCTA = () => {
                 <Clock className="w-5 h-5 text-green-400 flex-shrink-0" />
               </div>
               <div className="text-left">
-                <div className="font-bold text-white text-base">15 min</div>
-                <div className="text-sm text-white/80">Free consultation</div>
+                <div className="font-bold text-white text-base">{t("finalCta.trust.consultationTime")}</div>
+                <div className="text-sm text-white/80">{t("finalCta.trust.consultationLabel")}</div>
               </div>
             </div>
             
@@ -234,8 +236,8 @@ export const FinalCTA = () => {
                 <div className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-75" />
               </div>
               <div className="text-left">
-                <div className="font-bold text-white text-base">2 hours</div>
-                <div className="text-sm text-white/80">Avg. response time</div>
+                <div className="font-bold text-white text-base">{t("finalCta.trust.responseTime")}</div>
+                <div className="text-sm text-white/80">{t("finalCta.trust.responseLabel")}</div>
               </div>
             </div>
             
@@ -244,8 +246,8 @@ export const FinalCTA = () => {
                 <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0" />
               </div>
               <div className="text-left">
-                <div className="font-bold text-white text-base">No commitment</div>
-                <div className="text-sm text-white/80">Zero pressure</div>
+                <div className="font-bold text-white text-base">{t("finalCta.trust.noCommitment")}</div>
+                <div className="text-sm text-white/80">{t("finalCta.trust.noCommitmentLabel")}</div>
               </div>
             </div>
           </motion.div>
@@ -259,7 +261,7 @@ export const FinalCTA = () => {
           >
             <span className="flex items-center justify-center gap-2 flex-wrap">
               <CheckCircle2 className="w-4 h-4 text-green-400" />
-              Join 200+ businesses that scaled efficiently with our dedicated virtual assistants
+              {t("finalCta.trust.footer")}
             </span>
           </motion.p>
         </motion.div>

@@ -68,7 +68,8 @@ const Contact = () => {
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     const formData = new FormData();
-    formData.append("access_key", "8aff1902-6795-4608-ad79-be6702aa7f3a");
+    const apiKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || "8aff1902-6795-4608-ad79-be6702aa7f3a";
+    formData.append("access_key", apiKey);
     formData.append("to", "patryk@dononlineagency.com");
     formData.append("email", data.email);
     formData.append("phone", data.phone);
@@ -112,7 +113,10 @@ const Contact = () => {
         body: formData,
       });
       const json = await response.json();
-      console.log("Web3Forms response", json);
+      // Response logged for debugging (remove in production)
+      if (import.meta.env.DEV) {
+        console.log("Web3Forms response", json);
+      }
       if (json.success) {
         toast({ title: "Success!", description: "Your message has been sent." });
         reset();

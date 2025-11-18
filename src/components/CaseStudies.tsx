@@ -1,10 +1,12 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { caseStudies } from "@/data/caseStudies";
 
 export const CaseStudies = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <motion.section
@@ -25,13 +27,14 @@ export const CaseStudies = () => {
           transition={{ duration: 0.6 }}
         >
           <span className="inline-block px-3 sm:px-4 py-1.5 sm:py-2 bg-gold/10 text-gold text-xs sm:text-sm font-semibold rounded-full mb-3 sm:mb-4">
-            Success Stories
+            {t("caseStudies.badge")}
           </span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 text-foreground">
-            Real Results from <span className="text-gold">Real Businesses</span>
-          </h2>
+          <h2 
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 text-foreground"
+            dangerouslySetInnerHTML={{ __html: t("caseStudies.heading") }}
+          />
           <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground max-w-3xl leading-relaxed">
-            See how companies like yours achieved dramatic cost savings and operational improvements with DON VA.
+            {t("caseStudies.description")}
           </p>
         </motion.div>
 
@@ -72,15 +75,15 @@ export const CaseStudies = () => {
                 <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-5 pb-4 sm:pb-5 border-b border-border">
                   <div className="text-center">
                     <div className="text-gold font-bold text-sm sm:text-base lg:text-lg">{study.stats.costSaved}</div>
-                    <div className="text-[10px] sm:text-xs text-muted-foreground">Saved</div>
+                    <div className="text-[10px] sm:text-xs text-muted-foreground">{t("caseStudies.labels.saved")}</div>
                   </div>
                   <div className="text-center">
                     <div className="text-gold font-bold text-sm sm:text-base lg:text-lg">{study.stats.vaCount}</div>
-                    <div className="text-[10px] sm:text-xs text-muted-foreground">Team Size</div>
+                    <div className="text-[10px] sm:text-xs text-muted-foreground">{t("caseStudies.labels.teamSize")}</div>
                   </div>
                   <div className="text-center">
                     <div className="text-gold font-bold text-sm sm:text-base lg:text-lg">{study.stats.timeframe}</div>
-                    <div className="text-[10px] sm:text-xs text-muted-foreground">Timeline</div>
+                    <div className="text-[10px] sm:text-xs text-muted-foreground">{t("caseStudies.labels.timeline")}</div>
                   </div>
                 </div>
 
@@ -96,8 +99,8 @@ export const CaseStudies = () => {
 
                 {/* Read more */}
                 <div className="flex items-center gap-1 sm:gap-2 text-gold font-semibold text-xs sm:text-sm group-hover:gap-2 sm:group-hover:gap-3 transition-all">
-                  <span className="hidden sm:inline">View Full Case Study</span>
-                  <span className="sm:hidden">View Study</span>
+                  <span className="hidden sm:inline">{t("caseStudies.labels.viewFull")}</span>
+                  <span className="sm:hidden">{t("caseStudies.labels.viewStudy")}</span>
                   <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
                 </div>
               </div>
@@ -114,11 +117,11 @@ export const CaseStudies = () => {
           className="mt-8 sm:mt-12 lg:mt-16 text-center"
         >
           <p className="text-sm sm:text-base lg:text-lg text-muted-foreground mb-4 sm:mb-6">
-            Ready to write your own success story?
+            {t("caseStudies.cta.ready")}
           </p>
           <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-gold text-foreground font-semibold text-sm sm:text-base rounded-lg sm:rounded-xl hover:bg-gold/90 transition-all duration-300 hover:scale-105 shadow-lg">
-            <span className="hidden sm:inline">Book Your Free Consultation →</span>
-            <span className="sm:hidden">Get Started →</span>
+            <span className="hidden sm:inline">{t("caseStudies.cta.bookConsultation")}</span>
+            <span className="sm:hidden">{t("caseStudies.cta.getStarted")}</span>
           </button>
         </motion.div>
       </div>

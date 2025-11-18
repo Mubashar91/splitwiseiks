@@ -1,30 +1,17 @@
 import { Shield, Clock, Users, Lock } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 const values = [
-  {
-    icon: Shield,
-    title: "70% Cost Reduction",
-    description: "Guaranteed in most cases"
-  },
-  {
-    icon: Users,
-    title: "Native German Quality Control",
-    description: "Direct oversight by native speakers"
-  },
-  {
-    icon: Clock,
-    title: "24h Replacement Guarantee",
-    description: "Seamless continuity assured"
-  },
-  {
-    icon: Lock,
-    title: "Full Confidentiality & NDAs",
-    description: "Your data stays secure"
-  }
+  { icon: Shield, key: "costReduction" },
+  { icon: Users, key: "qualityControl" },
+  { icon: Clock, key: "replacement" },
+  { icon: Lock, key: "confidentiality" },
 ];
 
 export const ValueProposition = () => {
+  const { t } = useTranslation();
+  
   return (
     <motion.section 
       className="relative py-8 sm:py-10 md:py-12 lg:py-14 bg-background z-10"
@@ -44,9 +31,10 @@ export const ValueProposition = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            Why <span className="text-gold">200+</span> Businesses Choose Us
-          </h2>
+          <h2 
+            className="text-4xl md:text-5xl font-bold mb-4"
+            dangerouslySetInnerHTML={{ __html: t("valueProposition.heading") }}
+          />
         </motion.div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
@@ -71,10 +59,10 @@ export const ValueProposition = () => {
                   <value.icon className="w-8 h-8" />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-gold transition-colors duration-300">
-                  {value.title}
+                  {t(`valueProposition.items.${value.key}.title`)}
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  {value.description}
+                  {t(`valueProposition.items.${value.key}.description`)}
                 </p>
               </div>
               

@@ -2,65 +2,38 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/ThemeProvider";
-import { Menu, X, Sun, Moon, ChevronDown, Globe } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Menu, X, Sun, Moon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
 import { useTranslation } from "react-i18next";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { theme, setTheme } = useTheme();
-  const location = useLocation();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const [currentLanguage, setCurrentLanguage] = useState(i18n.language || 'en');
-  const [isLanguageOpen, setIsLanguageOpen] = useState(false);
 
   const languages = [
     { code: 'en', name: 'English' },
     { code: 'de', name: 'German' }
   ];
 
-  // Navigation items that will be translated
   const navItems = [
-    { name: t('nav.services'), href: "#services" },
-    { name: t('nav.howItWorks'), href: "#how-it-works" },
-    { name: t('nav.pricing'), href: "#pricing" },
-    { name: t('nav.testimonials'), href: "#testimonials" },
-    { name: t('nav.faq'), href: "#faq" },
+    { name: t("nav.services"), href: "#services" },
+    { name: t("nav.howItWorks"), href: "#how-it-works" },
+    { name: t("nav.pricing"), href: "#pricing" },
+    { name: t("nav.testimonials"), href: "#testimonials" },
+    { name: t("nav.faq"), href: "#faq" },
   ];
-
-  // Sync i18n language with component state
-  useEffect(() => {
-    const handleLanguageChange = (lng: string) => {
-      setCurrentLanguage(lng);
-    };
-    
-    // Set up listener for language changes
-    i18n.on('languageChanged', handleLanguageChange);
-    
-    // Clean up listener on unmount
-    return () => {
-      i18n.off('languageChanged', handleLanguageChange);
-    };
-  }, [i18n]);
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng).then(() => {
       setCurrentLanguage(lng);
       localStorage.setItem('i18nextLng', lng);
-      setIsLanguageOpen(false);
     });
   };
-
-  // Initialize language from localStorage
-  useEffect(() => {
-    const savedLanguage = localStorage.getItem('i18nextLng') || i18n.language;
-    if (savedLanguage) {
-      i18n.changeLanguage(savedLanguage);
-      setCurrentLanguage(savedLanguage);
-    }
-  }, [i18n]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -76,7 +49,6 @@ export const Navbar = () => {
   };
 
   const getThemeIcon = () => {
-    // Default to light if theme is system or undefined
     const currentTheme = theme === "system" || !theme ? "light" : theme;
     return (
       <motion.div
@@ -104,15 +76,18 @@ export const Navbar = () => {
       }
     };
 
-    if (location.pathname !== '/') {
-      navigate('/');
-      // Wait a tick for DOM to render on home, then scroll
-      setTimeout(goScroll, 350);
-    } else {
-      goScroll();
-    }
+    goScroll();
     setIsOpen(false);
   };
+
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('i18nextLng') || i18n.language;
+    if (savedLanguage) {
+      // Change i18n language; currentLanguage will be updated on manual changes
+      i18n.changeLanguage(savedLanguage);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <motion.nav
@@ -162,55 +137,38 @@ export const Navbar = () => {
           <div className="hidden md:flex items-center space-x-2 md:space-x-2.5 lg:space-x-3 xl:space-x-4">
             {/* Language Selector */}
             <motion.div
-              className="relative"
+              className="relative flex items-center space-x-1"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
+              transition={{ duration: 0.6, delay: 0.35 }}
             >
               <Button
-                variant="ghost"
+                variant={currentLanguage === "en" ? "gold" : "ghost"}
                 size="sm"
-                onClick={() => setIsLanguageOpen(!isLanguageOpen)}
-                className="flex items-center gap-1.5 hover:bg-gold/10 hover:text-gold px-2.5 py-1.5 rounded-md transition-colors"
+                onClick={() => {
+                  if (currentLanguage !== "en") changeLanguage("en");
+                }}
+                className="px-2 py-1 text-xs md:text-xs lg:text-sm"
               >
-                <Globe className="h-4 w-4" />
-                <span className="text-sm font-medium">{currentLanguage.toUpperCase()}</span>
-                <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isLanguageOpen ? 'rotate-180' : ''}`} />
+                EN
               </Button>
-              
-              <AnimatePresence>
-                {isLanguageOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    transition={{ duration: 0.15, ease: "easeOut" }}
-                    className="absolute right-0 mt-2 w-40 origin-top-right rounded-lg bg-popover p-1 shadow-lg border border-border z-50"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {languages.map((lang) => (
-                      <button
-                        key={lang.code}
-                        onClick={() => changeLanguage(lang.code)}
-                        className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${
-                          currentLanguage === lang.code
-                            ? 'bg-accent text-accent-foreground'
-                            : 'hover:bg-accent/50 hover:text-accent-foreground'
-                        }`}
-                      >
-                        {lang.name}
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <Button
+                variant={currentLanguage === "de" ? "gold" : "ghost"}
+                size="sm"
+                onClick={() => {
+                  if (currentLanguage !== "de") changeLanguage("de");
+                }}
+                className="px-2 py-1 text-xs md:text-xs lg:text-sm"
+              >
+                DE
+              </Button>
             </motion.div>
 
             {/* Theme Toggle */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.45 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
             >
               <Button
                 variant="ghost"
@@ -232,10 +190,10 @@ export const Navbar = () => {
               <Button
                 variant="gold-outline"
                 size="sm"
-                onClick={() => navigate('/contact')}
+                onClick={() => navigate(`/contact`)}
                 className="text-sm md:text-sm lg:text-base px-4 md:px-4 lg:px-6 py-2 md:py-2 lg:py-2 cursor-pointer hover:shadow-gold transition-all duration-300 hover:scale-105 font-semibold whitespace-nowrap"
               >
-                {t('nav.contact')}
+                {t("nav.contact")}
               </Button>
             </motion.div>
             <motion.div
@@ -246,10 +204,10 @@ export const Navbar = () => {
               <Button
                 variant="gold"
                 size="sm"
-                onClick={() => navigate('/book-meeting')}
+                onClick={() => navigate(`/book-meeting`)}
                 className="text-sm md:text-sm lg:text-base px-4 md:px-4 lg:px-7 py-2 md:py-2 lg:py-2.5 cursor-pointer hover:shadow-lg hover:shadow-gold/30 transition-all duration-300 hover:scale-105 font-semibold whitespace-nowrap"
               >
-                {t('nav.getStarted')}
+                {t("nav.getStarted")}
               </Button>
             </motion.div>
           </div>
@@ -345,22 +303,22 @@ export const Navbar = () => {
                     <Button
                       variant="gold-outline"
                       onClick={() => {
-                        navigate('/contact');
+                        navigate(`/contact`);
                         setIsOpen(false);
                       }}
                       className="w-full text-base py-3 cursor-pointer font-semibold hover:shadow-gold transition-all duration-300"
                     >
-                      {t('nav.contact')}
+                      {t("nav.contact")}
                     </Button>
                     <Button
                       variant="gold"
                       onClick={() => {
-                        navigate('/book-meeting');
+                        navigate(`/book-meeting`);
                         setIsOpen(false);
                       }}
                       className="w-full text-base py-3 cursor-pointer font-semibold hover:shadow-lg transition-all duration-300"
                     >
-                      {t('nav.getStarted')}
+                      {t("nav.getStarted")}
                     </Button>
                   </div>
                 </motion.div>

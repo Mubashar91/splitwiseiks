@@ -127,9 +127,12 @@ export const Hero = () => {
               <Button 
                 variant="gold" 
                 size="lg"
-                onClick={() => window.location.href = '/book-meeting'}
+                onClick={() => {
+                  const currentLang = window.location.pathname.match(/^\/(en|de)\b/)?.[1] || 'en';
+                  window.location.href = `/${currentLang}/book-meeting`;
+                }}
                 className="group relative w-full sm:w-auto text-sm sm:text-base md:text-lg px-8 sm:px-10 md:px-12 py-4 sm:py-6 md:py-7 h-auto font-semibold shadow-[0_16px_40px_-18px_hsl(45_80%_55%/0.7)] hover:shadow-[0_24px_60px_-18px_hsl(45_80%_55%/0.9)] transform hover:scale-105 hover:-translate-y-1 transition-all duration-300 cursor-pointer overflow-hidden rounded-2xl"
-                aria-label="Book a free 15-minute consultation"
+                aria-label={t("hero.ctaAria")}
               >
                 {/* Subtle shimmer effect */}
                 <motion.div
@@ -190,7 +193,7 @@ export const Hero = () => {
                     }}
                   />
                 </motion.div>
-                <span className="font-semibold text-foreground">Limited slots available this week</span>
+                <span className="font-semibold text-foreground">{t("hero.urgency")}</span>
               </motion.div>
             </motion.div>
           </motion.div>
@@ -456,7 +459,7 @@ export const Hero = () => {
         className="hidden md:flex absolute bottom-8 md:bottom-10 left-1/2 transform -translate-x-1/2 text-gold"
       >
         <div className="flex flex-col items-center gap-2">
-          <span className="text-xs md:text-sm">Scroll to explore</span>
+          <span className="text-xs md:text-sm">{t("hero.scroll")}</span>
           <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>
