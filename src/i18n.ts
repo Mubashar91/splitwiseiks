@@ -1,6 +1,10 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
+const storedLng = typeof window !== 'undefined' ? localStorage.getItem('i18nextLng') : null;
+const browserLng = typeof navigator !== 'undefined' ? navigator.language : 'de';
+const initialLng = storedLng || (browserLng && browserLng.startsWith('de') ? 'de' : 'en');
+
 // English translations
 const en = {
   nav: {
@@ -632,7 +636,7 @@ i18n.use(initReactI18next).init({
     en: { translation: en },
     de: { translation: de }
   },
-  lng: 'en',
+  lng: initialLng,
   fallbackLng: 'en',
   interpolation: {
     escapeValue: false,

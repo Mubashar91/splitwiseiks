@@ -2,6 +2,7 @@ import { motion, useScroll, useSpring } from "framer-motion";
 import { Calendar, Clock, User, ArrowLeft, Twitter, Linkedin, Link as LinkIcon } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, AreaChart, Area, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from "recharts";
 
@@ -399,37 +400,262 @@ const blogPostsDe: BlogPost[] = [
     id: 1,
     title: "Wie virtuelle Assistenten Ihre Betriebskosten um 70 % senken können",
     excerpt: "Erfahren Sie, welche Strategien erfolgreiche Unternehmen nutzen, um ihre Kosten drastisch zu senken und gleichzeitig die Qualität mit virtuellen Assistenten hochzuhalten.",
-    content: blogPostsEn[0].content,
+    content: `
+      <h2>Die Kostenkrise im modernen Geschäft</h2>
+      <p>In einem hart umkämpften Markt suchen Unternehmen ständig nach Wegen, ihre Betriebskosten zu senken – ohne Qualität einzubüßen. Das klassische Beschäftigungsmodell ist teuer: Zu Gehalt kommen Sozialleistungen, Büroflächen, Ausstattung und Verwaltungsaufwand. Virtuelle Assistenten (VAs) sind eine erprobte Alternative, die weltweit Unternehmen entlastet.</p>
+
+      <h3>Kosteneinsparungen im Überblick: Eine konkrete Analyse</h3>
+      <p>Im Vergleich zu Vollzeitangestellten ergeben sich Einsparungen in mehreren Kategorien:</p>
+
+      <h4>Direkte Einsparungen</h4>
+      <ul>
+        <li><strong>Bürofläche:</strong> €300–€800 pro Mitarbeiter und Monat in Großstädten</li>
+        <li><strong>Ausstattung & IT:</strong> €2.000–€5.000 initial + €500/Jahr Wartung</li>
+        <li><strong>Leistungen & Versicherungen:</strong> 20–30 % des Grundgehalts</li>
+        <li><strong>Bezahlter Urlaub:</strong> 20–30 Tage/Jahr (Wert: €4.000–€8.000)</li>
+        <li><strong>Krankheitstage:</strong> Ø 10 Tage/Jahr (Wert: €2.000–€4.000)</li>
+      </ul>
+
+      <h4>Verdeckte Einsparungen</h4>
+      <ul>
+        <li><strong>Recruiting:</strong> €3.000–€10.000 pro Einstellung</li>
+        <li><strong>Onboarding & Training:</strong> 3–6 Monate mit reduzierter Produktivität</li>
+        <li><strong>HR-Administration:</strong> Payroll, Compliance, Performance-Management</li>
+        <li><strong>Fluktuationsrisiko:</strong> Neustartkosten nach 2–3 Jahren durchschnittlicher Betriebszugehörigkeit</li>
+        <li><strong>Management-Overhead:</strong> Zeitaufwand für Koordination und Kontrolle</li>
+      </ul>
+
+      <h3>Praxisbeispiele: Zahlen, die überzeugen</h3>
+      <h4>Fallstudie 1: E‑Commerce</h4>
+      <p><strong>Vorher:</strong> 3 Vollzeit‑CSRs für €8.000/Monat<br/>
+      <strong>Nachher:</strong> 2 VAs für gleiches Volumen zu €2.400/Monat<br/>
+      <strong>Ergebnis:</strong> €5.600/Monat Einsparung (70 %), Reaktionszeit von 4 h auf 2 h verbessert</p>
+
+      <h4>Fallstudie 2: Digitalagentur</h4>
+      <p><strong>Vorher:</strong> 2 Admins + 1 Social‑Media‑Manager für €10.500/Monat<br/>
+      <strong>Nachher:</strong> 3 spezialisierte VAs für €3.200/Monat<br/>
+      <strong>Ergebnis:</strong> €7.300/Monat Einsparung (≈69 %), Output +40 %</p>
+
+      <h4>Fallstudie 3: SaaS‑Startup</h4>
+      <p><strong>Vorher:</strong> Gründer investiert 30 h/Woche in Admin‑Aufgaben<br/>
+      <strong>Nachher:</strong> 1 VA für €1.200/Monat übernimmt Admin<br/>
+      <strong>Ergebnis:</strong> Freigesetzte Gründerzeit steigert Umsatz in 6 Monaten um 85 %</p>
+
+      <h3>Qualität sichern: Der Native‑Control‑Vorteil</h3>
+      <p>Billige VA‑Angebote scheitern oft an fehlender Qualitätssicherung. Bei DON VA setzen wir auf ein dreistufiges Review mit deutschsprachigen, muttersprachlichen Managerinnen und Managern, kontinuierliches Training und klare Leistungskennzahlen – inklusive 24‑Stunden‑Austauschgarantie.</p>
+
+      <h3>Ihr ROI‑Beispielrechner</h3>
+      <p><strong>Traditionelle Anstellung (Gehalt €40.000/Jahr):</strong></p>
+      <ul>
+        <li>Grundgehalt: €40.000</li>
+        <li>Leistungen (25 %): €10.000</li>
+        <li>Bürofläche: €6.000</li>
+        <li>Ausstattung: €3.000</li>
+        <li>Training: €2.000</li>
+        <li>Managementzeit: €3.000</li>
+        <li><strong>Gesamtkosten pro Jahr: €64.000</strong></li>
+      </ul>
+
+      <p><strong>Virtueller Assistent (20 h/Woche):</strong></p>
+      <ul>
+        <li>Monatliche Kosten: €1.200</li>
+        <li>Einrichtungsgebühr (einmalig): €149</li>
+        <li><strong>Gesamtkosten pro Jahr: €14.549</strong></li>
+      </ul>
+
+      <p><strong>Jährliche Ersparnis: €49.451 (≈77 %)</strong></p>
+
+      <h3>Ihr 30‑Tage‑Fahrplan</h3>
+      <h4>Woche 1: Analyse & Planung</h4>
+      <ul>
+        <li>Prozesse auditieren und Routinetätigkeiten identifizieren</li>
+        <li>Kosten pro Funktion berechnen</li>
+        <li>Erfolgskriterien definieren</li>
+        <li>Kostenlose Beratung mit DON VA buchen</li>
+      </ul>
+
+      <h4>Woche 2: Onboarding & Training</h4>
+      <ul>
+        <li>Matching mit passendem VA</li>
+        <li>Zugänge bereitstellen, Prozesse dokumentieren</li>
+        <li>Kommunikationskanäle und Check‑ins festlegen</li>
+      </ul>
+
+      <h4>Woche 3: Pilotphase</h4>
+      <ul>
+        <li>Mit 2–3 klar definierten Aufgaben starten</li>
+        <li>Qualität und Durchlaufzeit messen</li>
+        <li>Feedback geben, Prozesse schärfen</li>
+      </ul>
+
+      <h4>Woche 4: Optimieren & Skalieren</h4>
+      <ul>
+        <li>Ergebnisse gegen KPIs messen</li>
+        <li>Weitere Aufgaben delegieren</li>
+        <li>Ggf. zusätzliche VAs hinzufügen und ROI planen</li>
+      </ul>
+
+      <h3>Häufige Fehler vermeiden</h3>
+      <ol>
+        <li><strong>Unklare Erwartungen:</strong> Keine dokumentierten Prozesse oder Ziele</li>
+        <li><strong>Mikromanagement:</strong> Zu wenig Vertrauen in die Eigenständigkeit</li>
+        <li><strong>Schwache Kommunikation:</strong> Unregelmäßige Check‑ins, unpräzises Feedback</li>
+        <li><strong>Falsche Aufgabenwahl:</strong> Strategisches statt operatives Delegieren</li>
+        <li><strong>Keine Qualitätssicherung:</strong> Anbieter ohne Kontrolle</li>
+      </ol>
+
+      <h3>Die Zukunft ist virtuell</h3>
+      <p>Der VA‑Markt wächst rasant, weil Effizienz zum Wettbewerbsvorteil wird. Wer früh auf skalierbare, virtuelle Teams setzt, sichert sich langfristig bessere Margen und schnellere Umsetzung.</p>
+
+      <h3>Jetzt handeln</h3>
+      <p>Viele Kundinnen und Kunden sehen bereits im ersten Monat einen positiven ROI. Buchen Sie eine kostenlose 15‑minütige Beratung – wir zeigen transparent, ob und wie VAs für Ihr Unternehmen Sinn ergeben.</p>
+    `,
     author: "Michael Schmidt",
     date: "15. März 2024",
     readTime: "12 Min. Lesezeit",
     category: "Kostenoptimierung",
     image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=500&fit=crop",
-    charts: blogPostsEn[0].charts,
+    charts: [
+      {
+        title: "Kostenvergleich nach Kategorie",
+        subtitle: "Jahreskosten: Festangestellte(r) vs. Virtueller Assistent",
+        type: "bar",
+        data: blog1CostData,
+        xKey: "category",
+        yFormatter: formatCurrency,
+        series: [
+          { key: "traditional", label: "Festangestellte(r) (€)", color: "#ef4444" },
+          { key: "withVA", label: "Virtueller Assistent (€)", color: "#22c55e" },
+        ],
+      },
+      {
+        title: "Verteilung der Gesamtkosten",
+        subtitle: "Gesamtvergleich der jährlichen Kosten",
+        type: "pie",
+        data: blog1TotalsPie,
+        valueKey: "value",
+        labelKey: "name",
+        innerRadius: 70,
+        outerRadius: 120,
+      },
+    ],
   },
   {
     id: 2,
     title: "5 Aufgaben, die Sie noch heute an einen virtuellen Assistenten auslagern sollten",
     excerpt: "Verschwenden Sie keine Zeit mehr mit Routineaufgaben. Erfahren Sie, welche Tätigkeiten Sie sofort abgeben sollten, um mehr Raum für strategische Arbeit zu schaffen.",
-    content: blogPostsEn[1].content,
+    content: `
+      <h2>Zeit ist Ihr wertvollstes Gut</h2>
+      <p>Als Unternehmerin, Unternehmer oder Führungskraft sollten Sie Ihre Zeit in Aufgaben mit hohem Hebel investieren. Viele verbringen jedoch Stunden mit Routinetätigkeiten, die ein VA zuverlässig übernehmen kann.</p>
+
+      <h3>1. E‑Mail‑Management</h3>
+      <p>Filtern, kategorisieren, Standardanfragen beantworten und nur Relevantes markieren – spart täglich 2–3 Stunden.</p>
+
+      <h3>2. Kalender‑ und Terminmanagement</h3>
+      <p>Planen, verschieben, vorbereiten, Erinnerungen versenden und Zeitzonen koordinieren.</p>
+
+      <h3>3. Social‑Media‑Management</h3>
+      <p>Contentplanung, Veröffentlichungen, Community‑Interaktion und Basis‑Kundenservice.</p>
+
+      <h3>4. Datenerfassung & Recherche</h3>
+      <p>CRM aktualisieren, Markt‑ und Wettbewerbsrecherchen, Reports zusammenstellen.</p>
+
+      <h3>5. Kundensupport (First‑Level)</h3>
+      <p>Häufige Fragen beantworten, Tickets priorisieren und komplexe Fälle eskalieren.</p>
+
+      <h3>Der Effekt</h3>
+      <p>Wer diese fünf Bereiche abgibt, gewinnt meist 15–20 Stunden pro Woche – Zeit für Strategie, Umsatz und Balance.</p>
+    `,
     author: "Sarah Weber",
     date: "10. März 2024",
     readTime: "4 Min. Lesezeit",
     category: "Produktivität",
     image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=500&fit=crop",
-    charts: blogPostsEn[1].charts,
+    charts: [
+      {
+        title: "Zeitverteilung nach Aufgabe",
+        subtitle: "Wie Führungskräfte ihre Zeit einsetzen (Stunden pro Woche)",
+        type: "pie",
+        data: blog2TaskData,
+        valueKey: "value",
+        labelKey: "name",
+        innerRadius: 60,
+        outerRadius: 120,
+      },
+      {
+        title: "Wöchentliche Stunden je Aufgabe",
+        subtitle: "Balkendarstellung derselben Verteilung",
+        type: "bar",
+        data: blog2TaskData,
+        xKey: "name",
+        series: [
+          { key: "hours", label: "Stunden", color: "#3b82f6" },
+        ],
+      },
+    ],
   },
   {
     id: 3,
     title: "Der vollständige Leitfaden zum Skalieren Ihres Unternehmens mit virtuellen Teams",
     excerpt: "Lernen Sie den bewährten Rahmen kennen, mit dem leistungsstarke virtuelle Teams aufgebaut und geführt werden, die echte Ergebnisse liefern.",
-    content: blogPostsEn[2].content,
+    content: `
+      <h2>Warum virtuelle Teams die Zukunft sind</h2>
+      <p>Das klassische Büro verliert an Bedeutung. Virtuelle Teams bieten Flexibilität, Kostenvorteile und Zugang zu globalen Talenten – Vorteile, die physische Strukturen selten erreichen.</p>
+
+      <h3>Phase 1: Klein starten</h3>
+      <p>Beginnen Sie mit einer klar abgegrenzten Funktion für einen VA. So testen Sie mit geringem Risiko, entwickeln Prozesse und sammeln belastbare Erfahrungen.</p>
+
+      <h3>Phase 2: Geplant erweitern</h3>
+      <p>Ist der Proof of Concept da, erweitern Sie gezielt um komplementäre Funktionen – bis ein schlagkräftiges, schlankes Operationsteam entsteht.</p>
+
+      <h3>Phase 3: Systeme aufbauen</h3>
+      <ul>
+        <li>Projektmanagement (z. B. Asana, Trello)</li>
+        <li>Kommunikation (Slack, Teams)</li>
+        <li>Dokumentation & SOPs</li>
+        <li>KPIs und Qualitätsmetriken</li>
+      </ul>
+
+      <h3>Zeitzonen meistern</h3>
+      <p>Mit klaren Übergaben und asynchroner Kommunikation erreichen Sie faktisch 24/7‑Betrieb.</p>
+
+      <h3>Qualitätssicherung</h3>
+      <p>DON VA setzt auf deutschsprachige Native‑Manager, die alle Ergebnisse prüfen – so bleibt die Qualität konstant hoch.</p>
+
+      <h3>Die Ergebnisse</h3>
+      <p>Richtig aufgesetzt, steigern virtuelle Teams die Kapazität um das 3‑Fache – ohne proportionale Kosten. Es geht nicht nur ums Sparen, sondern um smartes Skalieren.</p>
+    `,
     author: "Thomas Müller",
     date: "5. März 2024",
     readTime: "7 Min. Lesezeit",
     category: "Wachstum",
     image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=500&fit=crop",
-    charts: blogPostsEn[2].charts,
+    charts: [
+      {
+        title: "Wachstum mit virtuellen Teams",
+        subtitle: "Umsatz, Kosten und Gewinn über 6 Monate",
+        type: "area",
+        data: blog3ScalingData,
+        xKey: "month",
+        yFormatter: formatCurrency,
+        series: [
+          { key: "revenue", label: "Umsatz (€)", color: "#3b82f6" },
+          { key: "costs", label: "Kosten (€)", color: "#ef4444" },
+          { key: "profit", label: "Gewinn (€)", color: "#22c55e" },
+        ],
+      },
+      {
+        title: "Gewinnmarge",
+        subtitle: "Prozentsatz des Umsatzes, der in Gewinn umgewandelt wird",
+        type: "line",
+        data: blog3WithMargin,
+        xKey: "month",
+        yFormatter: (v) => formatPercent(v),
+        series: [
+          { key: "margin", label: "Marge %", color: "#d4af37" },
+        ],
+      },
+    ],
   },
 ];
 
@@ -438,14 +664,25 @@ const BlogDetail = () => {
   const { id } = useParams();
   const { t, i18n } = useTranslation();
 
+  const [currentLang, setCurrentLang] = useState(i18n.language);
+  useEffect(() => {
+    const handler = (lng: string) => setCurrentLang(lng);
+    i18n.on('languageChanged', handler);
+    return () => {
+      i18n.off('languageChanged', handler);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Reading progress bar
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 20, restDelta: 0.001 });
 
-  const lang = i18n.language?.startsWith('de') ? 'de' : 'en';
+  const lang = currentLang?.startsWith('de') ? 'de' : 'en';
   const posts = lang === 'de' ? blogPostsDe : blogPostsEn;
 
   const post = posts.find(p => p.id === Number(id));
+  const dePost = blogPostsDe.find(p => p.id === Number(id));
   const currentIndex = posts.findIndex(p => p.id === Number(id));
   const prevPost = currentIndex > 0 ? posts[currentIndex - 1] : undefined;
   const nextPost = currentIndex >= 0 && currentIndex < posts.length - 1 ? posts[currentIndex + 1] : undefined;
@@ -734,9 +971,11 @@ const BlogDetail = () => {
               transition={{ duration: 0.6, delay: 0.15 }}
               className="mb-12 sm:mb-16"
             >
-              {post.charts && post.charts.length > 0 && (
+              {(() => {
+                const charts = (dePost?.charts ?? post.charts) ?? [];
+                return charts.length > 0 ? (
                 <div className="space-y-10">
-                  {post.charts.map((c, idx) => (
+                  {charts.map((c, idx) => (
                     <div key={idx}>
                       <div className="w-full" style={{ height: 400 }}>
                         <ResponsiveContainer width="100%" height="100%">
@@ -751,7 +990,8 @@ const BlogDetail = () => {
                     </div>
                   ))}
                 </div>
-              )}
+                ) : null;
+              })()}
             </motion.div>
 
             {/* Blog Content */}
@@ -776,7 +1016,7 @@ const BlogDetail = () => {
                 [&_li>strong]:text-amber-500
                 [&_br]:my-2"
             >
-              <div dangerouslySetInnerHTML={{ __html: post.content }} />
+              <div dangerouslySetInnerHTML={{ __html: (dePost?.content ?? post.content) }} />
             </motion.div>
 
             {/* Prev / Next navigation */}
