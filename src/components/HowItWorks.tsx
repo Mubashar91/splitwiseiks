@@ -1,34 +1,16 @@
-import { motion } from "framer-motion";
+ import { motion } from "framer-motion";
 import { Calendar, UserCheck, Rocket, LineChart } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const steps = [
-  {
-    icon: Calendar,
-    step: "Step 1",
-    title: "Book Your Free Consultation",
-    description: "Share your needs, challenges, and goals in a 15-minute call. No sales pressure, just honest advice on how we can help you scale."
-  },
-  {
-    icon: UserCheck,
-    step: "Step 2",
-    title: "Get Matched with Your Perfect VA",
-    description: "Within 48-72 hours, we'll match you with a pre-vetted VA who has the exact skills you need. Review their profile, experience, and work samples."
-  },
-  {
-    icon: Rocket,
-    step: "Step 3",
-    title: "Onboard & Start Working",
-    description: "We handle the entire onboarding process. Your VA learns your tools, processes, and brand voice. Most clients are fully operational within a week."
-  },
-  {
-    icon: LineChart,
-    step: "Step 4",
-    title: "Scale & Optimize",
-    description: "Track progress with regular reports. Scale up or down as needed. Our native German quality control ensures consistent excellence."
-  }
+  { icon: Calendar, key: "step1" },
+  { icon: UserCheck, key: "step2" },
+  { icon: Rocket, key: "step3" },
+  { icon: LineChart, key: "step4" },
 ];
 
 export const HowItWorks = () => {
+  const { t } = useTranslation();
   return (
     <motion.section 
       id="how-it-works"
@@ -47,13 +29,14 @@ export const HowItWorks = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
         >
           <span className="inline-block px-4 py-2 bg-foreground text-gold text-sm font-semibold rounded-full mb-4">
-            Simple 4-Step Process
+            {t("howItWorks.badge")}
           </span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
-            How It <span className="text-gold">Works</span>
-          </h2>
+          <h2 
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6"
+            dangerouslySetInnerHTML={{ __html: t("howItWorks.heading") }}
+          />
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl leading-relaxed">
-            From first call to fully operational in less than a week. Simple, transparent, and fast.
+            {t("howItWorks.description")}
           </p>
         </motion.div>
 
@@ -85,13 +68,13 @@ export const HowItWorks = () => {
                   whileHover={{ y: -8, scale: 1.02 }}
                 >
                   <p className="text-gold font-bold text-sm uppercase tracking-wider mb-3 inline-block px-3 py-1 bg-gold/10 rounded-full">
-                    {step.step}
+                    {t(`howItWorks.steps.${step.key}.step`)}
                   </p>
                   <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-3 sm:mb-4 text-foreground group-hover:text-gold transition-colors duration-300">
-                    {step.title}
+                    {t(`howItWorks.steps.${step.key}.title`)}
                   </h3>
                   <p className="text-muted-foreground leading-relaxed text-sm sm:text-base md:text-lg">
-                    {step.description}
+                    {t(`howItWorks.steps.${step.key}.description`)}
                   </p>
                   
                   {/* Decorative corner */}

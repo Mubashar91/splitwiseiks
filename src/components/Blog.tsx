@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 interface BlogPost {
@@ -310,11 +310,10 @@ const blogPostsDe: BlogPost[] = [
 
 export const Blog = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
-  const currentLang = location.pathname.match(/^\/(en|de)\b/)?.[1] || "en";
-  const posts = currentLang === "de" ? blogPostsDe : blogPostsEn;
+  const currentLang = i18n.language?.startsWith('de') ? 'de' : 'en';
+  const posts = currentLang === 'de' ? blogPostsDe : blogPostsEn;
 
   return (
     <motion.section
@@ -357,7 +356,7 @@ export const Blog = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               className="group bg-card border border-border/50 rounded-xl sm:rounded-2xl overflow-hidden hover:border-gold/50 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)] transition-all duration-300 cursor-pointer w-full"
-              onClick={() => navigate(`/${currentLang}/blog/${post.id}`)}
+              onClick={() => navigate(`/blog/${post.id}`)}
               whileHover={{ y: -8 }}
             >
               {/* Image */}

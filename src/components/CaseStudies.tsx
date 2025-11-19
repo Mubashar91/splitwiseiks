@@ -2,11 +2,13 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { caseStudies } from "@/data/caseStudies";
+import { caseStudiesEn, caseStudiesDe, type CaseStudy } from "@/data/caseStudies";
 
 export const CaseStudies = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language?.startsWith('de') ? 'de' : 'en';
+  const studies: CaseStudy[] = lang === 'de' ? caseStudiesDe : caseStudiesEn;
 
   return (
     <motion.section
@@ -40,7 +42,7 @@ export const CaseStudies = () => {
 
         {/* Case Studies Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-7xl mx-auto">
-          {caseStudies.map((study, index) => (
+          {studies.map((study: CaseStudy, index: number) => (
             <motion.article
               key={study.id}
               initial={{ opacity: 0, y: 50 }}

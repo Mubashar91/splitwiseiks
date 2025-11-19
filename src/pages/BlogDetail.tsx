@@ -436,14 +436,14 @@ const blogPostsDe: BlogPost[] = [
 const BlogDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   // Reading progress bar
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 20, restDelta: 0.001 });
 
-  const currentLang = window.location.pathname.match(/^\/(en|de)\b/)?.[1] || 'en';
-  const posts = currentLang === 'de' ? blogPostsDe : blogPostsEn;
+  const lang = i18n.language?.startsWith('de') ? 'de' : 'en';
+  const posts = lang === 'de' ? blogPostsDe : blogPostsEn;
 
   const post = posts.find(p => p.id === Number(id));
   const currentIndex = posts.findIndex(p => p.id === Number(id));
@@ -456,7 +456,7 @@ const BlogDetail = () => {
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">{t("blog.detail.notFound")}</h1>
           <button
-            onClick={() => navigate(`/${currentLang}`)}
+            onClick={() => navigate(`/`)}
             className="text-gold hover:underline"
           >
             {t("blog.detail.returnHome")}
@@ -585,7 +585,7 @@ const BlogDetail = () => {
         <div className="container mx-auto px-4 sm:px-5 md:px-8 lg:px-12 xl:px-16">
           {/* Back button */}
           <motion.button
-            onClick={() => navigate(`/${currentLang}`)}
+            onClick={() => navigate(`/`)}
             className="mt-11 mb-6 sm:mb-8 inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-card/50 backdrop-blur-sm border-2 border-border/50 hover:border-gold/50 rounded-lg sm:rounded-xl text-foreground hover:text-gold transition-all duration-300 font-semibold group shadow-md hover:shadow-lg hover:shadow-gold/10 text-sm sm:text-base"
             whileHover={{ x: -4, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -784,7 +784,7 @@ const BlogDetail = () => {
               <div className="mt-4 sm:mt-6 mb-6 sm:mb-8 flex flex-col sm:flex-row gap-3 sm:gap-4">
                 {prevPost && (
                   <button
-                    onClick={() => navigate(`/${currentLang}/blog/${prevPost.id}`)}
+                    onClick={() => navigate(`/blog/${prevPost.id}`)}
                     className="flex-1 text-left px-4 py-3 rounded-lg border border-border/60 hover:border-gold/60 transition"
                   >
                     ← {prevPost.title}
@@ -792,7 +792,7 @@ const BlogDetail = () => {
                 )}
                 {nextPost && (
                   <button
-                    onClick={() => navigate(`/${currentLang}/blog/${nextPost.id}`)}
+                    onClick={() => navigate(`/blog/${nextPost.id}`)}
                     className="flex-1 text-right px-4 py-3 rounded-lg border border-border/60 hover:border-gold/60 transition"
                   >
                     {nextPost.title} →
@@ -840,7 +840,7 @@ const BlogDetail = () => {
                   .map((relatedPost: BlogPost) => (
                   <motion.div
                     key={relatedPost.id}
-                    onClick={() => navigate(`/${currentLang}/blog/${relatedPost.id}`)}
+                    onClick={() => navigate(`/blog/${relatedPost.id}`)}
                     className="group cursor-pointer bg-card border border-border/50 rounded-lg sm:rounded-xl overflow-hidden hover:border-gold/50 hover:shadow-lg hover:shadow-gold/10 transition-all duration-300"
                     whileHover={{ y: -4 }}
                   >

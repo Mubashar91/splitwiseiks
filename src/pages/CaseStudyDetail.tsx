@@ -2,15 +2,15 @@ import { ArrowLeft, CheckCircle2, Quote } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Navbar } from "@/components/Navbar";
-import { caseStudies } from "@/data/caseStudies";
+import { caseStudiesEn, caseStudiesDe, type CaseStudy } from "@/data/caseStudies";
 
 const CaseStudyDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { t } = useTranslation();
-  const currentLang = window.location.pathname.match(/^\/(en|de)\b/)?.[1] || 'en';
-  
-  const caseStudy = caseStudies.find(cs => cs.id === Number(id));
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language?.startsWith('de') ? 'de' : 'en';
+  const studies: CaseStudy[] = lang === 'de' ? caseStudiesDe : caseStudiesEn;
+  const caseStudy = studies.find(cs => cs.id === Number(id));
 
   if (!caseStudy) {
     return (
@@ -18,7 +18,7 @@ const CaseStudyDetail = () => {
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">{t("caseStudies.detail.notFound")}</h1>
           <button
-            onClick={() => navigate(`/${currentLang}`)}
+            onClick={() => navigate(`/`)}
             className="text-gold hover:underline"
           >
             {t("caseStudies.detail.returnHome")}
@@ -36,7 +36,7 @@ const CaseStudyDetail = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back button */}
           <button
-            onClick={() => navigate(`/${currentLang}`)}
+            onClick={() => navigate(`/`)}
             className="mt-6 mb-8 inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-card/80 text-sm font-medium text-foreground shadow-sm hover:border-gold/60 hover:bg-gold/10 hover:text-gold transition-colors duration-200 group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -175,7 +175,7 @@ const CaseStudyDetail = () => {
                 
                 <div className="flex flex-col sm:flex-row items-start gap-3">
                   <button
-                    onClick={() => navigate(`/${currentLang}/book-meeting`)}
+                    onClick={() => navigate(`/book-meeting`)}
                     className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-gold to-yellow-600 hover:from-yellow-600 hover:to-gold text-black font-bold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2"
                   >
                     <span>{t("caseStudies.detail.bookFreeConsultation")}</span>
@@ -183,7 +183,7 @@ const CaseStudyDetail = () => {
                   </button>
                   
                   <button
-                    onClick={() => navigate(`/${currentLang}`)}
+                    onClick={() => navigate(`/`)}
                     className="w-full sm:w-auto px-8 py-4 bg-card border-2 border-gold/30 hover:border-gold/50 text-foreground font-semibold rounded-xl transition-all duration-300 hover:bg-gold/5"
                   >
                     {t("caseStudies.detail.viewAllCaseStudies")}
@@ -211,10 +211,10 @@ const CaseStudyDetail = () => {
             <div className="mt-12 pt-10 border-t border-border">
               <h3 className="text-xl sm:text-2xl font-bold mb-6 text-foreground">{t("caseStudies.detail.moreSuccessStories")}</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                {caseStudies.filter(cs => cs.id !== caseStudy.id).slice(0, 2).map((relatedStudy) => (
+                {studies.filter(cs => cs.id !== caseStudy.id).slice(0, 2).map((relatedStudy) => (
                   <div
                     key={relatedStudy.id}
-                    onClick={() => navigate(`/${currentLang}/case-study/${relatedStudy.id}`)}
+                    onClick={() => navigate(`/case-study/${relatedStudy.id}`)}
                     className="group cursor-pointer bg-card border border-border rounded-lg overflow-hidden hover:border-gold/50 hover:shadow-md transition-all duration-300"
                   >
                     <img

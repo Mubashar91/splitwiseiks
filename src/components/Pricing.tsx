@@ -11,6 +11,7 @@ const BULK_DISCOUNT_RATE = 0.03;
 
 // TypeScript Interface
 interface PricingPlan {
+  id: 'starter' | 'professional' | 'enterprise';
   name: string;
   hours: string;
   price: number;
@@ -22,6 +23,7 @@ interface PricingPlan {
 
 const plans: PricingPlan[] = [
   {
+    id: 'starter',
     name: "Starter",
     hours: "10h / week",
     price: 369,
@@ -36,6 +38,7 @@ const plans: PricingPlan[] = [
     highlighted: false
   },
   {
+    id: 'professional',
     name: "Professional",
     hours: "20h / week",
     price: 629,
@@ -50,6 +53,7 @@ const plans: PricingPlan[] = [
     highlighted: true
   },
   {
+    id: 'enterprise',
     name: "Enterprise",
     hours: "40h / week",
     price: 1169,
@@ -148,7 +152,7 @@ export const Pricing = () => {
                     <span className="text-gold font-bold text-sm sm:text-base uppercase tracking-wide">{t("pricing.bannerBadge")}</span>
                   </motion.div>
                   
-                  <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-2">
+                  <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
                     {t("pricing.bannerTitle")}
                   </h3>
                   <p className="text-base sm:text-lg text-muted-foreground mb-4">
@@ -328,7 +332,12 @@ export const Pricing = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10 max-w-7xl mx-auto">
-          {plans.map((plan, index) => (
+          {plans.map((plan, index) => {
+            const localizedName = t(`pricing.plans.${plan.id}.name`, { defaultValue: plan.name });
+            const localizedHours = t(`pricing.plans.${plan.id}.hours`, { defaultValue: plan.hours });
+            const localizedBadge = plan.badge ? t(`pricing.plans.${plan.id}.badge`, { defaultValue: plan.badge }) : undefined;
+            const localizedFeatures = t(`pricing.plans.${plan.id}.features`, { returnObjects: true, defaultValue: plan.features }) as string[];
+            return (
             <motion.div 
               key={index}
               className="relative"
@@ -369,7 +378,7 @@ export const Pricing = () => {
                   transition={{ duration: 0.8, delay: 0.3 }}
                 />
               
-                {plan.badge && (
+                {localizedBadge && (
                   <motion.div 
                     className="absolute -top-4 right-6 bg-gradient-to-r from-foreground to-foreground/95 text-gold px-4 py-1.5 rounded-full text-xs font-bold shadow-xl flex items-center gap-1.5 border border-gold/20"
                     initial={{ y: -10, opacity: 0 }}
@@ -383,7 +392,7 @@ export const Pricing = () => {
                     >
                       <Star className="w-3.5 h-3.5 fill-current" />
                     </motion.div>
-                    {plan.badge}
+                    {localizedBadge}
                   </motion.div>
                 )}
               
@@ -392,18 +401,18 @@ export const Pricing = () => {
                   <h3 className={`text-2xl sm:text-3xl font-bold mb-2 group-hover:scale-105 transition-transform duration-300 ${
                     plan.highlighted ? 'text-foreground' : 'text-foreground'
                   }`}>
-                    {plan.name}
+                    {localizedName}
                   </h3>
                   <div className="flex items-center gap-2">
                     <p className={`text-sm font-medium ${
                       plan.highlighted ? 'text-foreground/70' : 'text-muted-foreground'
                     }`}>
-                      {plan.hours}
+                      {localizedHours}
                     </p>
                     <span className={`px-2 py-0.5 text-xs rounded-full ${
                       plan.highlighted ? 'bg-foreground/20 text-foreground' : 'bg-gold/10 text-gold'
                     }`}>
-                      {parseInt(plan.hours)} hours
+                      {parseInt(plan.hours)} {t('pricing.hoursUnit', { defaultValue: 'hours' })}
                     </span>
                   </div>
                 </div>
@@ -424,7 +433,7 @@ export const Pricing = () => {
                     <span className={`text-base ml-1 ${
                       plan.highlighted ? 'text-foreground/60' : 'text-muted-foreground'
                     }`}>
-                      /mo
+                      {t('pricing.perMonth', { defaultValue: '/mo' })}
                     </span>
                   </div>
                   {plan.setupFee > 0 ? (
@@ -445,7 +454,7 @@ export const Pricing = () => {
 
                 {/* Features */}
                 <ul className="space-y-3 mb-6 relative z-10">
-                  {plan.features.map((feature, fIndex) => (
+                  {localizedFeatures.map((feature, fIndex) => (
                     <motion.li 
                       key={fIndex} 
                       className="flex items-start gap-2.5"
@@ -479,7 +488,7 @@ export const Pricing = () => {
                       ? 'bg-foreground text-gold hover:bg-foreground/95 shadow-lg hover:shadow-xl hover:scale-105' 
                       : 'border-2 border-gold text-gold hover:bg-gold hover:text-foreground hover:scale-105'
                   }`}
-                  aria-label={`Get started with ${plan.name} plan - ${plan.hours} per week at €${Math.round(plan.price * (1 - discount) * vaCount)} per month`}
+                  aria-label={`Get started with ${localizedName} plan - ${localizedHours} at €${Math.round(plan.price * (1 - discount) * vaCount)} ${t('pricing.perMonth', { defaultValue: '/mo' })}`}
                 >
                   {/* Button shine effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover/btn:translate-x-[200%] transition-transform duration-700" aria-hidden="true" />
@@ -487,7 +496,7 @@ export const Pricing = () => {
                 </Button>
               </div>
             </motion.div>
-          ))}
+          )})}
         </div>
 
         <motion.p 

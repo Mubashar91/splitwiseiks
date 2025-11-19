@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useTranslation, Trans } from "react-i18next";
 
 const tools = [
   { name: "Slack", category: "Communication" },
@@ -22,6 +23,11 @@ const tools = [
 ];
 
 export const ToolsIntegration = () => {
+  const { t } = useTranslation();
+  const getCategory = (category: string) => {
+    const key = category.replace(/\s+/g, "").toLowerCase();
+    return t(`toolsIntegration.categories.${key}`, { defaultValue: category });
+  };
   return (
     <motion.section 
       className="relative py-8 sm:py-10 md:py-12 lg:py-14 bg-gradient-to-b from-background via-muted/30 to-background z-60"
@@ -39,10 +45,12 @@ export const ToolsIntegration = () => {
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 px-2">
-            Works With Your <span className="text-gold">Existing Tools</span>
+            <Trans i18nKey="toolsIntegration.title">
+              Works With Your <span className="text-gold">Existing Tools</span>
+            </Trans>
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl px-2">
-            Our VAs are trained on 50+ platforms. No need to change your workflow—we adapt to yours.
+            {t('toolsIntegration.subtitle')}
           </p>
         </motion.div>
 
@@ -67,7 +75,7 @@ export const ToolsIntegration = () => {
                   {tool.name}
                 </p>
                 <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
-                  {tool.category}
+                  {getCategory(tool.category)}
                 </p>
               </motion.div>
             ))}
@@ -81,10 +89,12 @@ export const ToolsIntegration = () => {
             transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
           >
             <p className="text-base sm:text-lg text-foreground mb-3 sm:mb-4">
-              <span className="font-bold text-gold">Need a specific tool?</span> Just ask. 
+              <Trans i18nKey="toolsIntegration.callout">
+                <span className="font-bold text-gold">Need a specific tool?</span> Just ask.
+              </Trans>
             </p>
             <p className="text-sm sm:text-base text-muted-foreground">
-              Our VAs receive ongoing training on new platforms monthly. If you use it, we can work with it.
+              {t('toolsIntegration.trainingNote')}
             </p>
           </motion.div>
         </div>

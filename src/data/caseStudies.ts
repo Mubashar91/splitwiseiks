@@ -21,7 +21,7 @@ export interface CaseStudy {
   };
 }
 
-export const caseStudies: CaseStudy[] = [
+export const caseStudiesEn: CaseStudy[] = [
   {
     id: 1,
     title: "E-Commerce Giant Reduces Costs by 70% While Scaling Operations",
@@ -160,4 +160,73 @@ export const caseStudies: CaseStudy[] = [
       vaCount: "4 VAs",
     },
   },
+];
+
+export const caseStudiesDe: CaseStudy[] = [
+  {
+    id: 1,
+    title: "E‑Commerce‑Riese senkt Kosten um 70% und skaliert den Betrieb",
+    company: "TechMart GmbH",
+    industry: "E‑Commerce",
+    challenge:
+      "TechMart gab 42.000 € pro Monat für den Kundensupport mit 7 Vollzeitkräften aus. Antwortzeiten waren langsam, First‑Contact‑Resolution uneinheitlich und saisonale Peaks erforderten teure Aushilfen und Überstunden.",
+    solution:
+      "Wir etablierten einen strukturierten Support mit 5 dedizierten VAs (Level‑1 Tickets, Bestellungen, Basis‑Support). Native deutschsprachige Manager prüften täglich Tickets und führten wöchentliche Coachings anhand von Playbooks durch.",
+    results: [
+      { metric: "Kostensenkung", value: "70%", description: "Monatliche Kosten sanken von 42.000 € auf 12.600 € bei gleicher Abdeckung." },
+      { metric: "Antwortzeit", value: "65% schneller", description: "Durchschnitt von 4 Std. auf 1,4 Std.; 92% innerhalb der ersten Stunde." },
+      { metric: "Kundenzufriedenheit", value: "4,8/5", description: "Von 3,9/5 auf 4,8/5 – 95% positives Feedback." },
+      { metric: "Skalierbarkeit", value: "3× Kapazität", description: "Bewältigt Peaks ohne Ad‑hoc‑Einstellungen oder Überstunden." }
+    ],
+    testimonial:
+      "DON VA hat unseren Kundensupport transformiert. Wir sparen 350.000 € jährlich bei besserem Service. Die native Qualitätskontrolle war der Game‑Changer.",
+    testimonialAuthor: "Stefan Richter",
+    testimonialRole: "CEO, TechMart GmbH",
+    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=500&fit=crop",
+    stats: { costSaved: "€350K/Jahr", timeframe: "3 Monate", vaCount: "5 VAs" }
+  },
+  {
+    id: 2,
+    title: "Agentur skaliert auf 50+ Kunden ohne Festanstellungen",
+    company: "Digital Dynamics",
+    industry: "Marketing‑Agentur",
+    challenge:
+      "Schnelles Wachstum – Festanstellungen waren langsam/teuer, Auslastung schwankte; PMs mit Admin statt Strategie beschäftigt.",
+    solution:
+      "Flexibles Team aus 8 VAs für Social Media, Content, Reporting und Admin. Pod‑Struktur pro Key‑Account, Skalierung binnen 48 Std.",
+    results: [
+      { metric: "Kundenwachstum", value: "150%", description: "Von 20 auf 50 Retainer‑Kunden in 6 Monaten ohne operative Festanstellungen." },
+      { metric: "Kosteneffizienz", value: "€180K gespart", description: "Verglichen mit internem Aufbau eines Äquivalents in 12 Monaten." },
+      { metric: "Projektdurchlauf", value: "40% schneller", description: "Schnellere Kalender, Reports und Launches über alle Kunden hinweg." },
+      { metric: "Flexibilität", value: "100%", description: "Skalierung binnen 48 Std. je Pipeline/Season ohne Qualitätsverlust." }
+    ],
+    testimonial:
+      "Ohne DON VA hätten wir nicht so schnell skaliert. Mehr Planbarkeit, glücklichere Kunden, bessere Margen.",
+    testimonialAuthor: "Julia Becker",
+    testimonialRole: "Founder, Digital Dynamics",
+    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=500&fit=crop",
+    stats: { costSaved: "€180K/Jahr", timeframe: "6 Monate", vaCount: "8 VAs" }
+  },
+  {
+    id: 3,
+    title: "SaaS‑Startup erreicht 24/7‑Support mit schlankem Budget",
+    company: "CloudFlow Solutions",
+    industry: "SaaS",
+    challenge:
+      "Weltweite Kunden, Bedarf an 24/7‑Support, aber kein Budget für ein vollzeitliches Schichtteam; steigende Churn durch langsame Antworten.",
+    solution:
+      "Verteiltes Team aus 4 VAs über Zeitzonen für Tier‑1 Support, Onboarding und Doku. Klare Escalations an Engineering für komplexe Fälle.",
+    results: [
+      { metric: "Abdeckung", value: "24/7", description: "Von 9–5 zu rund‑um‑die‑Uhr für alle Regionen." },
+      { metric: "Churn", value: "−45%", description: "Von 8% auf 4,4% in zwei Quartalen." },
+      { metric: "Kosteneinsparung", value: "€120K/Jahr", description: "Verglichen mit internem Schichtteam." },
+      { metric: "Antwortzeit", value: "< 30 Min", description: "Durchschnittliche First Response, inkl. Nächte/Wochenenden." }
+    ],
+    testimonial:
+      "24/7‑Support wurde möglich – der ROI war sofort sichtbar. Allein die Churn‑Reduktion finanzierte den Service dreifach.",
+    testimonialAuthor: "Marco Schneider",
+    testimonialRole: "CTO, CloudFlow Solutions",
+    image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=500&fit=crop",
+    stats: { costSaved: "€120K/Jahr", timeframe: "4 Monate", vaCount: "4 VAs" }
+  }
 ];
