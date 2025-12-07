@@ -39,11 +39,21 @@ app.use(cors({
     // Wildcard support via env
     if (configuredOrigins.includes('*')) return callback(null, true);
 
+    // Allow ALL localhost ports for development (more lenient)
+    if (/^http:\/\/localhost:\d+$/.test(origin)) return callback(null, true);
+    if (/^http:\/\/127\.0\.0\.1:\d+$/.test(origin)) return callback(null, true);
+
     // Allow common Vite dev ports
     if (/^http:\/\/localhost:517\d$/.test(origin)) return callback(null, true);
 
     // Allow any explicitly configured origins
     if (configuredOrigins.includes(origin)) return callback(null, true);
+
+    // In development, be more lenient
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(`⚠️  CORS: Allowing origin in dev mode: ${origin}`);
+      return callback(null, true);
+    }
 
     return callback(new Error('Not allowed by CORS'));
   },

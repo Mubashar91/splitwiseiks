@@ -69,13 +69,19 @@ export const PricingDynamic = () => {
         setLoading(true);
         setError(null);
         const langParam = currentLang;
-        const response = await fetch(`${API_BASE}/api/pricing?lang=${langParam}`);
+        const apiUrl = `${API_BASE}/api/pricing?lang=${langParam}`;
+        
+        console.log('Fetching pricing from:', apiUrl);
+        const response = await fetch(apiUrl);
         
         if (!response.ok) {
-          throw new Error(`Failed to fetch pricing: ${response.status}`);
+          const errorText = await response.text().catch(() => 'Unknown error');
+          console.error('API Error:', response.status, errorText);
+          throw new Error(`Failed to fetch pricing: ${response.status} - ${errorText}`);
         }
         
         const data = await response.json();
+        console.log('Pricing data received:', data);
         
         // Ensure plans array exists and sort by planKey order
         const order = ['starter', 'professional', 'enterprise'];
@@ -85,12 +91,18 @@ export const PricingDynamic = () => {
             )
           : [];
         
+        if (fetchedPlans.length === 0) {
+          console.warn('No pricing plans found for language:', langParam);
+          setError('No pricing plans available. Please add plans in the admin panel.');
+        } else {
+          console.log('Loaded plans:', fetchedPlans.length);
+        }
+        
         setPlans(fetchedPlans);
       } catch (err) {
-        if (import.meta.env.DEV) {
-          console.error('Error fetching pricing:', err);
-        }
-        setError(err instanceof Error ? err.message : 'Failed to load pricing');
+        console.error('Error fetching pricing:', err);
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load pricing';
+        setError(`${errorMessage}. API Base: ${API_BASE}`);
       } finally {
         setLoading(false);
       }

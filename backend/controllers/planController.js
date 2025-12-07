@@ -4,11 +4,16 @@ import Plan from '../models/Plan.js';
 export async function getPricing(req, res) {
   try {
     const lang = (req.query.lang || 'en').toLowerCase();
+    console.log(`📊 Fetching pricing for language: ${lang}`);
     const plans = await Plan.find({ lang }).sort({ planKey: 1 }).lean();
+    console.log(`✅ Found ${plans.length} plans for ${lang}`);
+    if (plans.length === 0) {
+      console.warn(`⚠️  No pricing plans found for language: ${lang}`);
+    }
     return res.json({ lang, plans });
   } catch (err) {
-    console.error('getPricing error', err);
-    return res.status(500).json({ error: 'Server error' });
+    console.error('❌ getPricing error', err);
+    return res.status(500).json({ error: 'Server error', details: err.message });
   }
 }
 

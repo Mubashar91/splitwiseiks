@@ -88,7 +88,11 @@ export default function AdminPricing() {
       const data = await res.json();
       const order = ['starter','professional','enterprise'];
       const list: Plan[] = Array.isArray(data.plans) ? data.plans.slice().sort((a: Plan,b: Plan)=> order.indexOf(a.planKey)-order.indexOf(b.planKey)) : [];
-      setPlans(list);
+      // Only update plans if they actually changed to prevent form resets
+      setPlans(prevPlans => {
+        const plansChanged = JSON.stringify(prevPlans) !== JSON.stringify(list);
+        return plansChanged ? list : prevPlans;
+      });
       setOriginalPlans(JSON.parse(JSON.stringify(list)) as Plan[]);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Failed to load';
@@ -100,7 +104,8 @@ export default function AdminPricing() {
 
   useEffect(() => {
     if (hasToken) load();
-  }, [hasToken, lang, load]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasToken, lang]); // Removed 'load' from dependencies to prevent unnecessary re-renders
 
   // Edit helpers
   const setPlanField = (idx: number, key: keyof Plan, value: Plan[keyof Plan]) => {
@@ -315,22 +320,58 @@ export default function AdminPricing() {
               <tr key={p.planKey} onMouseEnter={() => setHoverRow(idx)} onMouseLeave={() => setHoverRow(r => (r===idx?null:r))} style={{ background: hoverRow === idx ? '#0e1a33' : (idx % 2 ? '#0b1426' : 'transparent'), transition: 'background 120ms ease', display: matches ? undefined : 'none' }}>
                 <td style={tdStyle}>{p.planKey}</td>
                 <td style={tdStyle}>
-                  <input value={p.name} onChange={e => setPlanField(idx, 'name', e.target.value)} style={{ ...inputBase, width: '100%' }} />
+                  <input 
+                    key={`${p.planKey}-name-${lang}`}
+                    value={p.name} 
+                    onChange={e => setPlanField(idx, 'name', e.target.value)} 
+                    style={{ ...inputBase, width: '100%' }} 
+                  />
                 </td>
                 <td style={tdStyle}>
-                  <input value={p.hours} onChange={e => setPlanField(idx, 'hours', e.target.value)} style={{ ...inputBase, width: '100%' }} />
+                  <input 
+                    key={`${p.planKey}-hours-${lang}`}
+                    value={p.hours} 
+                    onChange={e => setPlanField(idx, 'hours', e.target.value)} 
+                    style={{ ...inputBase, width: '100%' }} 
+                  />
                 </td>
                 <td style={{ ...tdStyle, ...numCell }}>
-                  <input type="number" min={0} step={0.01} value={p.price} onChange={e => setPlanField(idx, 'price', Number(e.target.value))} style={{ ...inputBase, width: '100%', textAlign: 'right' as const }} />
+                  <input 
+                    key={`${p.planKey}-price-${lang}`}
+                    type="number" 
+                    min={0} 
+                    step={0.01} 
+                    value={p.price} 
+                    onChange={e => setPlanField(idx, 'price', Number(e.target.value))} 
+                    style={{ ...inputBase, width: '100%', textAlign: 'right' as const }} 
+                  />
                 </td>
                 <td style={{ ...tdStyle, ...numCell }}>
-                  <input type="number" min={0} step={0.01} value={p.setupFee} onChange={e => setPlanField(idx, 'setupFee', Number(e.target.value))} style={{ ...inputBase, width: '100%', textAlign: 'right' as const }} />
+                  <input 
+                    key={`${p.planKey}-setupFee-${lang}`}
+                    type="number" 
+                    min={0} 
+                    step={0.01} 
+                    value={p.setupFee} 
+                    onChange={e => setPlanField(idx, 'setupFee', Number(e.target.value))} 
+                    style={{ ...inputBase, width: '100%', textAlign: 'right' as const }} 
+                  />
                 </td>
                 <td style={tdStyle}>
-                  <input value={p.badge || ''} onChange={e => setPlanField(idx, 'badge', e.target.value)} style={{ ...inputBase, width: '100%' }} />
+                  <input 
+                    key={`${p.planKey}-badge-${lang}`}
+                    value={p.badge || ''} 
+                    onChange={e => setPlanField(idx, 'badge', e.target.value)} 
+                    style={{ ...inputBase, width: '100%' }} 
+                  />
                 </td>
                 <td style={{ ...tdStyle, ...featuresCell }}>
-                  <textarea value={(p.features||[]).join('\n')} onChange={e => setPlanField(idx, 'features', e.target.value.split('\n').map(s=>s.trim()).filter(Boolean))} style={{ ...inputBase, width: '100%', minHeight: 64, resize: 'vertical' }} />
+                  <textarea 
+                    key={`${p.planKey}-features-${lang}`}
+                    value={(p.features||[]).join('\n')} 
+                    onChange={e => setPlanField(idx, 'features', e.target.value.split('\n').map(s=>s.trim()).filter(Boolean))} 
+                    style={{ ...inputBase, width: '100%', minHeight: 64, resize: 'vertical' }} 
+                  />
                 </td>
                 <td style={{ ...tdStyle, textAlign: 'center' }}>
                   <input type="checkbox" checked={p.highlighted} onChange={e => setPlanField(idx, 'highlighted', e.target.checked)} />
@@ -359,7 +400,12 @@ export default function AdminPricing() {
         <summary style={{ cursor: 'pointer', fontWeight: 700 }}>Add New Plan</summary>
         <div style={{ ...card, marginTop: 10 }}>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-            <select value={newPlan.planKey} onChange={e => setNewPlan({ ...newPlan, planKey: e.target.value })} style={{ ...inputBase, flex: '1 1 260px' }}>
+            <select 
+              key="new-plan-planKey"
+              value={newPlan.planKey} 
+              onChange={e => setNewPlan(prev => ({ ...prev, planKey: e.target.value }))} 
+              style={{ ...inputBase, flex: '1 1 260px' }}
+            >
               <option value="">Select planKey</option>
               {['starter','professional','enterprise'].map(k => (
                 <option key={k} value={k} disabled={plans.some(p => p.planKey === k)}>
@@ -367,15 +413,63 @@ export default function AdminPricing() {
                 </option>
               ))}
             </select>
-            <input placeholder="name" value={newPlan.name} onChange={e => setNewPlan({ ...newPlan, name: e.target.value })} style={{ ...inputBase, flex: '1 1 260px' }} />
-            <input placeholder="hours e.g. 10h/week" value={newPlan.hours} onChange={e => setNewPlan({ ...newPlan, hours: e.target.value })} style={{ ...inputBase, flex: '1 1 220px' }} />
-            <input type="number" placeholder="price" min={0} step={0.01} value={newPlan.price} onChange={e => setNewPlan({ ...newPlan, price: Number(e.target.value) })} style={{ ...inputBase, width: 160, textAlign: 'right' as const }} />
-            <input type="number" placeholder="setupFee" min={0} step={0.01} value={newPlan.setupFee} onChange={e => setNewPlan({ ...newPlan, setupFee: Number(e.target.value) })} style={{ ...inputBase, width: 160, textAlign: 'right' as const }} />
-            <input placeholder="badge (optional)" value={newPlan.badge || ''} onChange={e => setNewPlan({ ...newPlan, badge: e.target.value })} style={{ ...inputBase, flex: '1 1 220px' }} />
+            <input 
+              key="new-plan-name"
+              placeholder="name" 
+              value={newPlan.name} 
+              onChange={e => setNewPlan(prev => ({ ...prev, name: e.target.value }))} 
+              style={{ ...inputBase, flex: '1 1 260px' }} 
+            />
+            <input 
+              key="new-plan-hours"
+              placeholder="hours e.g. 10h/week" 
+              value={newPlan.hours} 
+              onChange={e => setNewPlan(prev => ({ ...prev, hours: e.target.value }))} 
+              style={{ ...inputBase, flex: '1 1 220px' }} 
+            />
+            <input 
+              key="new-plan-price"
+              type="number" 
+              placeholder="price" 
+              min={0} 
+              step={0.01} 
+              value={newPlan.price} 
+              onChange={e => setNewPlan(prev => ({ ...prev, price: Number(e.target.value) }))} 
+              style={{ ...inputBase, width: 160, textAlign: 'right' as const }} 
+            />
+            <input 
+              key="new-plan-setupFee"
+              type="number" 
+              placeholder="setupFee" 
+              min={0} 
+              step={0.01} 
+              value={newPlan.setupFee} 
+              onChange={e => setNewPlan(prev => ({ ...prev, setupFee: Number(e.target.value) }))} 
+              style={{ ...inputBase, width: 160, textAlign: 'right' as const }} 
+            />
+            <input 
+              key="new-plan-badge"
+              placeholder="badge (optional)" 
+              value={newPlan.badge || ''} 
+              onChange={e => setNewPlan(prev => ({ ...prev, badge: e.target.value }))} 
+              style={{ ...inputBase, flex: '1 1 220px' }} 
+            />
             <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>highlighted
-              <input type="checkbox" checked={newPlan.highlighted} onChange={e => setNewPlan({ ...newPlan, highlighted: e.target.checked })} />
+              <input 
+                key="new-plan-highlighted"
+                type="checkbox" 
+                checked={newPlan.highlighted} 
+                onChange={e => setNewPlan(prev => ({ ...prev, highlighted: e.target.checked }))} 
+              />
             </label>
-            <textarea rows={4} placeholder="features (one per line)" value={(newPlan.features||[]).join('\n')} onChange={e => setNewPlan({ ...newPlan, features: e.target.value.split('\n').map(s=>s.trim()).filter(Boolean) })} style={{ ...inputBase, flex: '1 1 100%', minHeight: 110, resize: 'vertical' }} />
+            <textarea 
+              key="new-plan-features"
+              rows={4} 
+              placeholder="features (one per line)" 
+              value={(newPlan.features||[]).join('\n')} 
+              onChange={e => setNewPlan(prev => ({ ...prev, features: e.target.value.split('\n').map(s=>s.trim()).filter(Boolean) }))} 
+              style={{ ...inputBase, flex: '1 1 100%', minHeight: 110, resize: 'vertical' }} 
+            />
           </div>
           <div style={{ marginTop: 12 }}>
             <button onClick={onAdd} disabled={!newPlan.planKey || !hasToken} style={{ ...btnPrimary, opacity: newPlan.planKey && hasToken ? 1 : 0.6 }}>Add Plan</button>
