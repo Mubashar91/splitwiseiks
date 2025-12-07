@@ -75,19 +75,48 @@ app.get('/admin', (_req, res) => {
 const PORT = process.env.PORT || 5001;
 
 async function start() {
+  // Check required environment variables
+  if (!process.env.MONGO_URI) {
+    console.error('❌ ERROR: MONGO_URI environment variable is required');
+    console.error('Please set MONGO_URI in Railway environment variables');
+    process.exit(1);
+  }
+
   try {
+    console.log('🔄 Connecting to MongoDB...');
     await connectDB(process.env.MONGO_URI);
+    
     const corsOrigins = configuredOrigins.length ? configuredOrigins : ['(dev: localhost:517x)'];
     const adminTokenSet = !!process.env.ADMIN_TOKEN;
-    app.listen(PORT, () => {
-      console.log(`Server listening on http://localhost:${PORT}`);
-      console.log(`[config] CORS origins: ${corsOrigins.join(', ')}`);
-      console.log(`[config] ADMIN_TOKEN configured: ${adminTokenSet ? 'yes' : 'no'}`);
+    
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log('✅ Server started successfully!');
+      console.log(`🌐 Server listening on port ${PORT}`);
+      console.log(`📋 CORS origins: ${corsOrigins.join(', ')}`);
+      console.log(`🔐 ADMIN_TOKEN configured: ${adminTokenSet ? 'yes' : 'no'}`);
+      console.log(`🏥 Health check: http://0.0.0.0:${PORT}/health`);
     });
   } catch (err) {
-    console.error('Failed to start server', err);
+    console.error('❌ Failed to start server:', err.message);
+    console.error('Stack trace:', err.stack);
+    console.error('\n💡 Troubleshooting:');
+    console.error('1. Check MONGO_URI is correct in Railway environment variables');
+    console.error('2. Verify MongoDB Atlas network access allows Railway IPs');
+    console.error('3. Check MongoDB connection string format');
     process.exit(1);
   }
 }
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err) => {
+  console.error('❌ Unhandled Promise Rejection:', err);
+  process.exit(1);
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('❌ Uncaught Exception:', err);
+  process.exit(1);
+});
 
 start();
