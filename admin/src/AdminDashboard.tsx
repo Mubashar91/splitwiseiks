@@ -39,71 +39,72 @@ export default function AdminDashboard() {
   const handleLogout = () => {
     setToken('');
     try { localStorage.removeItem('adminToken'); } catch (_err) { void _err; }
+    window.location.href = '/login';
   };
 
   const navItems = [
     {
-      path: '/admin/pricing',
+      path: '/pricing',
       label: 'Pricing',
       icon: DollarSign,
       description: 'Manage pricing plans'
     },
     {
-      path: '/admin/how-it-works',
+      path: '/how-it-works',
       label: 'How It Works',
       icon: Workflow,
       description: 'Manage workflow steps'
     },
     {
-      path: '/admin/faq',
+      path: '/faq',
       label: 'FAQ',
       icon: HelpCircle,
       description: 'Manage FAQ items'
     },
     {
-      path: '/admin/services',
+      path: '/services',
       label: 'Services',
       icon: Briefcase,
       description: 'Manage services'
     },
     {
-      path: '/admin/testimonials',
+      path: '/testimonials',
       label: 'Testimonials',
       icon: MessageSquare,
       description: 'Manage testimonials'
     },
     {
-      path: '/admin/blogs',
+      path: '/blogs',
       label: 'Blogs',
       icon: FileText,
       description: 'Manage blog posts'
     },
     {
-      path: '/admin/case-studies',
+      path: '/case-studies',
       label: 'Case Studies',
       icon: Trophy,
       description: 'Manage success stories'
     },
     {
-      path: '/admin/hero',
+      path: '/hero',
       label: 'Hero Section',
       icon: FileText,
       description: 'Manage hero section'
     },
     {
-      path: '/admin/why-choose-us',
+      path: '/why-choose-us',
       label: 'Why Choose Us',
       icon: Briefcase,
       description: 'Manage why choose us section'
     },
     {
-      path: '/admin/footer',
+      path: '/footer',
       label: 'Footer',
       icon: Settings,
       description: 'Manage footer content'
     },
     {
-      path: '/admin/final-cta',
+      path: '/final-cta',
       label: 'Final CTA',
       icon: FileText,
       description: 'Manage final call-to-action section'
@@ -151,7 +152,7 @@ export default function AdminDashboard() {
 
       <div className="relative w-full py-8">
         {/* Navigation Cards */}
-        {location.pathname === '/admin' || location.pathname === '/admin/' ? (
+        {location.pathname === '/' || location.pathname === '' ? (
           <div className="mb-8">
             <div className="mb-10">
               <div className="flex items-center justify-between mb-4">
@@ -342,7 +343,7 @@ export default function AdminDashboard() {
             {/* Navigation Breadcrumb */}
             <nav className="mb-6 flex items-center gap-2 text-sm">
               <Link
-                to="/admin"
+                to="/"
                 className="text-slate-400 hover:text-gold transition-colors font-medium"
               >
                 Dashboard
@@ -356,7 +357,7 @@ export default function AdminDashboard() {
             {/* Back to Dashboard Button */}
             <div className="mb-6">
               <Link
-                to="/admin"
+                to="/"
                 className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-800/40 hover:bg-slate-800/60 border border-slate-700/50 hover:border-gold/50 text-white rounded-xl transition-all text-sm font-medium backdrop-blur-sm hover:shadow-lg hover:shadow-gold/10"
               >
                 <svg
