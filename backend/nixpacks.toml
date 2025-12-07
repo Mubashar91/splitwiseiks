@@ -1,0 +1,9 @@
+[providers]
+node = "20"
+
+[phases.install]
+cmds = ["npm ci"]
+
+[start]
+cmd = "node server.js"
+
