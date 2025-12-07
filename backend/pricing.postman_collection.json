@@ -1,0 +1,94 @@
+{
+  "info": {
+    "name": "Pricing API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Postman collection for Pricing API (public and admin endpoints)"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
+      }
+    },
+    {
+      "name": "Public - Get Pricing (lang=en)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/pricing?lang=en",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "pricing"],
+          "query": [{ "key": "lang", "value": "en" }]
+        }
+      }
+    },
+    {
+      "name": "Admin - List Plans (lang=en)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/admin/pricing?lang=en",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "admin", "pricing"],
+          "query": [{ "key": "lang", "value": "en" }]
+        }
+      }
+    },
+    {
+      "name": "Admin - Create Plan (en/starter)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"lang\": \"en\",\n  \"plan\": {\n    \"planKey\": \"starter\",\n    \"name\": \"Starter\",\n    \"hours\": \"Mon-Fri 9am-5pm\",\n    \"price\": 9.99,\n    \"setupFee\": 0,\n    \"features\": [\n      \"Email support\",\n      \"Basic analytics\"\n    ],\n    \"highlighted\": false,\n    \"badge\": \"Best Value\"\n  }\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/admin/pricing", "host": ["{{baseUrl}}"], "path": ["api", "admin", "pricing"] }
+      }
+    },
+    {
+      "name": "Admin - Update Plan (en/starter)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"lang\": \"en\",\n  \"updates\": {\n    \"price\": 10.99\n  }\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/admin/pricing/starter", "host": ["{{baseUrl}}"], "path": ["api", "admin", "pricing", "starter"] }
+      }
+    },
+    {
+      "name": "Admin - Delete Plan (en/starter)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/admin/pricing/starter?lang=en",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "admin", "pricing", "starter"],
+          "query": [{ "key": "lang", "value": "en" }]
+        }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5001" },
+    { "key": "adminToken", "value": "dev-admin-token" }
+  ]
+}

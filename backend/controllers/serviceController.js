@@ -1,0 +1,86 @@
+import Service from '../models/Service.js';
+
+// Public: GET services by language
+export async function getServices(req, res) {
+  try {
+    const lang = (req.query.lang || 'en').toLowerCase();
+    const services = await Service.find({ lang })
+      .sort({ order: 1 })
+      .lean();
+    return res.json({ lang, services });
+  } catch (err) {
+    console.error('getServices error', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+}
+
+// Admin: list services for a language
+export async function listServices(req, res) {
+  try {
+    const lang = (req.query.lang || 'en').toLowerCase();
+    const services = await Service.find({ lang })
+      .sort({ order: 1 })
+      .lean();
+    return res.json({ lang, services });
+  } catch (err) {
+    console.error('listServices error', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+}
+
+// Admin: create service
+export async function createService(req, res) {
+  try {
+    const { lang = 'en', service } = req.body || {};
+    if (!service || service.order === undefined) {
+      return res.status(400).json({ error: 'service with order required' });
+    }
+    const created = await Service.create({ ...service, lang: lang.toLowerCase() });
+    return res.status(201).json({ message: 'created', service: created });
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(409).json({ error: 'duplicate order for lang' });
+    }
+    console.error('createService error', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+}
+
+// Admin: update service
+export async function updateService(req, res) {
+  try {
+    const { lang = 'en', updates = {} } = req.body || {};
+    const order = parseInt(req.params.order);
+    if (isNaN(order)) {
+      return res.status(400).json({ error: 'Invalid order' });
+    }
+    const updated = await Service.findOneAndUpdate(
+      { lang: lang.toLowerCase(), order },
+      { $set: updates },
+      { new: true }
+    ).lean();
+    if (!updated) return res.status(404).json({ error: 'not found' });
+    return res.json({ message: 'updated', service: updated });
+  } catch (err) {
+    console.error('updateService error', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+}
+
+// Admin: delete service
+export async function deleteService(req, res) {
+  try {
+    const lang = (req.query.lang || 'en').toLowerCase();
+    const order = parseInt(req.params.order);
+    if (isNaN(order)) {
+      return res.status(400).json({ error: 'Invalid order' });
+    }
+    const result = await Service.deleteOne({ lang, order });
+    if (result.deletedCount === 0) return res.status(404).json({ error: 'not found' });
+    return res.json({ message: 'deleted' });
+  } catch (err) {
+    console.error('deleteService error', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+}
+
