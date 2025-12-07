@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+  import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChevronDown, ChevronUp, Save, RotateCcw, RefreshCw, Loader2, CheckCircle2, AlertCircle, Globe, Shield, Sparkles } from 'lucide-react';
 
 type Lang = 'en' | 'de';
