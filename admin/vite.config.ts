@@ -13,6 +13,6 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true,
   },
-  base: '/admin/',
+  base: process.env.NODE_ENV === 'production' ? '/admin/' : '/',
 })
 
