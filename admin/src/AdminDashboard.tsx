@@ -6,6 +6,9 @@ const API_BASE =
   ((import.meta as unknown) as { env?: Record<string, string> }).env?.VITE_API_BASE ||
   'http://localhost:5001';
 
+const ENV = ((import.meta as unknown) as { env?: Record<string, any> }).env || {};
+const IS_DEV = !!ENV.DEV;
+
 export default function AdminDashboard() {
   const location = useLocation();
   const [token, setToken] = useState<string>(() => {
@@ -121,7 +124,7 @@ export default function AdminDashboard() {
 
       {/* Header */}
       <header className="bg-slate-900/80 backdrop-blur-xl border-b border-slate-800/50 sticky top-0 z-50 shadow-lg shadow-black/20">
-        <div className="w-full px-6">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-gold/20 to-gold/10 rounded-lg border border-gold/20">
@@ -150,7 +153,7 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      <div className="relative w-full py-8">
+      <div className="relative w-full max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {/* Navigation Cards */}
         {location.pathname === '/' || location.pathname === '' ? (
           <div className="mb-8">
@@ -213,7 +216,7 @@ export default function AdminDashboard() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs text-purple-300 uppercase tracking-wider mb-1">Environment</p>
-                      <p className="text-2xl font-bold text-white">{import.meta.env.DEV ? 'Dev' : 'Prod'}</p>
+                      <p className="text-2xl font-bold text-white">{IS_DEV ? 'Dev' : 'Prod'}</p>
                     </div>
                     <div className="w-12 h-12 rounded-lg bg-purple-500/20 flex items-center justify-center">
                       <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
@@ -330,8 +333,8 @@ export default function AdminDashboard() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs text-slate-400 uppercase tracking-wider mb-1.5 font-semibold">Environment</p>
-                      <p className="text-lg font-bold text-white">{import.meta.env.DEV ? 'Development' : 'Production'}</p>
-                      <p className="text-xs text-slate-500 mt-1">{import.meta.env.DEV ? 'Debug mode enabled' : 'Production ready'}</p>
+                      <p className="text-lg font-bold text-white">{IS_DEV ? 'Development' : 'Production'}</p>
+                      <p className="text-xs text-slate-500 mt-1">{IS_DEV ? 'Debug mode enabled' : 'Production ready'}</p>
                     </div>
                   </div>
                 </div>
