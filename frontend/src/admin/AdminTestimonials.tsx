@@ -82,7 +82,11 @@ export default function AdminTestimonials() {
       if (!res.ok) throw new Error(`Failed: ${res.status}`);
       const data = await res.json();
       const list: Testimonial[] = Array.isArray(data.testimonials) ? data.testimonials.slice().sort((a: Testimonial, b: Testimonial) => a.order - b.order) : [];
-      setTestimonials(list);
+      // Only update testimonials if they actually changed to prevent form resets
+      setTestimonials(prevTestimonials => {
+        const testimonialsChanged = JSON.stringify(prevTestimonials) !== JSON.stringify(list);
+        return testimonialsChanged ? list : prevTestimonials;
+      });
       setOriginalTestimonials(JSON.parse(JSON.stringify(list)) as Testimonial[]);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Failed to load';
@@ -94,7 +98,8 @@ export default function AdminTestimonials() {
 
   useEffect(() => {
     if (hasToken) load();
-  }, [hasToken, lang, load]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasToken, lang]); // Removed 'load' from dependencies to prevent unnecessary re-renders
 
   const setTestimonialField = (idx: number, key: keyof Testimonial, value: Testimonial[keyof Testimonial]) => {
     setTestimonials(prev => prev.map((t, i) => (i === idx ? { ...t, [key]: value } : t)));
@@ -174,29 +179,50 @@ export default function AdminTestimonials() {
   };
 
   const onAdd = async () => {
-    if (!hasToken) return alert('Admin token required');
-    if (newTestimonial.order < 0) return alert('Order must be non-negative');
-    const existingOrders = new Set(testimonials.map(t => t.order));
-    if (existingOrders.has(newTestimonial.order)) return alert(`Order ${newTestimonial.order} already exists for ${lang}.`);
-    const err = validateCore(newTestimonial);
-    if (err) return alert(err);
-    const url = `${API_BASE}/api/admin/testimonials`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...headers() },
-      body: JSON.stringify({ lang, testimonial: newTestimonial }),
-    });
-    if (!res.ok) {
-      if (res.status === 409) {
-        return alert('This order already exists for the selected language.');
-      }
-      await logHttpError(res, `POST ${url}`);
-      return alert('Add failed: ' + res.status);
+    if (!hasToken) {
+      pushToast('Admin token required', 'error');
+      return;
     }
-    setNewTestimonial({ order: 0, content: '', name: '', role: '', company: '' });
-    await load();
-    pushToast('Testimonial added');
-    setAddOpen(false);
+    if (newTestimonial.order < 0) {
+      pushToast('Order must be non-negative', 'error');
+      return;
+    }
+    const existingOrders = new Set(testimonials.map(t => t.order));
+    if (existingOrders.has(newTestimonial.order)) {
+      pushToast(`Order ${newTestimonial.order} already exists for ${lang}.`, 'error');
+      return;
+    }
+    const err = validateCore(newTestimonial);
+    if (err) {
+      pushToast(err, 'error');
+      return;
+    }
+    const url = `${API_BASE}/api/admin/testimonials`;
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...headers() },
+        body: JSON.stringify({ lang, testimonial: newTestimonial }),
+      });
+      if (!res.ok) {
+        if (res.status === 409) {
+          pushToast('This order already exists for the selected language.', 'error');
+          return;
+        }
+        const errorText = await res.text().catch(() => 'Unknown error');
+        await logHttpError(res, `POST ${url}`);
+        pushToast(`Add failed: ${res.status} - ${errorText}`, 'error');
+        console.error('Failed to add testimonial:', errorText);
+        return;
+      }
+      setNewTestimonial({ order: 0, content: '', name: '', role: '', company: '' });
+      await load();
+      pushToast('Testimonial added successfully!', 'success');
+      setAddOpen(false);
+    } catch (error) {
+      console.error('Error adding testimonial:', error);
+      pushToast(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error');
+    }
   };
 
   const card = { background: '#0b1220', border: '1px solid #1f2937', borderRadius: 14, padding: 16, boxShadow: '0 8px 20px rgba(0,0,0,0.35)' } as const;
@@ -276,19 +302,46 @@ export default function AdminTestimonials() {
               return (
               <tr key={t._id || t.order} onMouseEnter={() => setHoverRow(idx)} onMouseLeave={() => setHoverRow(r => (r===idx?null:r))} style={{ background: hoverRow === idx ? '#0e1a33' : (idx % 2 ? '#0b1426' : 'transparent'), transition: 'background 120ms ease', display: matches ? undefined : 'none' }}>
                 <td style={tdStyle}>
-                  <input type="number" min={0} value={t.order} onChange={e => setTestimonialField(idx, 'order', Number(e.target.value))} style={{ ...inputBase, width: 80, textAlign: 'center' as const }} />
+                  <input 
+                    key={`${t._id || t.order}-order-${lang}`}
+                    type="number" 
+                    min={0} 
+                    value={t.order} 
+                    onChange={e => setTestimonialField(idx, 'order', Number(e.target.value))} 
+                    style={{ ...inputBase, width: 80, textAlign: 'center' as const }} 
+                  />
                 </td>
                 <td style={tdStyle}>
-                  <textarea value={t.content} onChange={e => setTestimonialField(idx, 'content', e.target.value)} style={{ ...inputBase, width: '100%', minHeight: 64, resize: 'vertical' }} />
+                  <textarea 
+                    key={`${t._id || t.order}-content-${lang}`}
+                    value={t.content} 
+                    onChange={e => setTestimonialField(idx, 'content', e.target.value)} 
+                    style={{ ...inputBase, width: '100%', minHeight: 64, resize: 'vertical' }} 
+                  />
                 </td>
                 <td style={tdStyle}>
-                  <input value={t.name} onChange={e => setTestimonialField(idx, 'name', e.target.value)} style={{ ...inputBase, width: '100%' }} />
+                  <input 
+                    key={`${t._id || t.order}-name-${lang}`}
+                    value={t.name} 
+                    onChange={e => setTestimonialField(idx, 'name', e.target.value)} 
+                    style={{ ...inputBase, width: '100%' }} 
+                  />
                 </td>
                 <td style={tdStyle}>
-                  <input value={t.role} onChange={e => setTestimonialField(idx, 'role', e.target.value)} style={{ ...inputBase, width: '100%' }} />
+                  <input 
+                    key={`${t._id || t.order}-role-${lang}`}
+                    value={t.role} 
+                    onChange={e => setTestimonialField(idx, 'role', e.target.value)} 
+                    style={{ ...inputBase, width: '100%' }} 
+                  />
                 </td>
                 <td style={tdStyle}>
-                  <input value={t.company} onChange={e => setTestimonialField(idx, 'company', e.target.value)} style={{ ...inputBase, width: '100%' }} />
+                  <input 
+                    key={`${t._id || t.order}-company-${lang}`}
+                    value={t.company} 
+                    onChange={e => setTestimonialField(idx, 'company', e.target.value)} 
+                    style={{ ...inputBase, width: '100%' }} 
+                  />
                 </td>
                 <td style={tdStyle}>
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -313,11 +366,44 @@ export default function AdminTestimonials() {
         <summary style={{ cursor: 'pointer', fontWeight: 700 }}>Add New Testimonial</summary>
         <div style={{ ...card, marginTop: 10 }}>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-            <input type="number" placeholder="Order" min={0} value={newTestimonial.order} onChange={e => setNewTestimonial({ ...newTestimonial, order: Number(e.target.value) })} style={{ ...inputBase, width: 140 }} />
-            <textarea rows={3} placeholder="Content" value={newTestimonial.content} onChange={e => setNewTestimonial({ ...newTestimonial, content: e.target.value })} style={{ ...inputBase, flex: '1 1 100%', minHeight: 80, resize: 'vertical' }} />
-            <input placeholder="Name" value={newTestimonial.name} onChange={e => setNewTestimonial({ ...newTestimonial, name: e.target.value })} style={{ ...inputBase, flex: '1 1 260px' }} />
-            <input placeholder="Role" value={newTestimonial.role} onChange={e => setNewTestimonial({ ...newTestimonial, role: e.target.value })} style={{ ...inputBase, flex: '1 1 260px' }} />
-            <input placeholder="Company" value={newTestimonial.company} onChange={e => setNewTestimonial({ ...newTestimonial, company: e.target.value })} style={{ ...inputBase, flex: '1 1 260px' }} />
+            <input 
+              key="new-testimonial-order"
+              type="number" 
+              placeholder="Order" 
+              min={0} 
+              value={newTestimonial.order} 
+              onChange={e => setNewTestimonial(prev => ({ ...prev, order: Number(e.target.value) }))} 
+              style={{ ...inputBase, width: 140 }} 
+            />
+            <textarea 
+              key="new-testimonial-content"
+              rows={3} 
+              placeholder="Content" 
+              value={newTestimonial.content} 
+              onChange={e => setNewTestimonial(prev => ({ ...prev, content: e.target.value }))} 
+              style={{ ...inputBase, flex: '1 1 100%', minHeight: 80, resize: 'vertical' }} 
+            />
+            <input 
+              key="new-testimonial-name"
+              placeholder="Name" 
+              value={newTestimonial.name} 
+              onChange={e => setNewTestimonial(prev => ({ ...prev, name: e.target.value }))} 
+              style={{ ...inputBase, flex: '1 1 260px' }} 
+            />
+            <input 
+              key="new-testimonial-role"
+              placeholder="Role" 
+              value={newTestimonial.role} 
+              onChange={e => setNewTestimonial(prev => ({ ...prev, role: e.target.value }))} 
+              style={{ ...inputBase, flex: '1 1 260px' }} 
+            />
+            <input 
+              key="new-testimonial-company"
+              placeholder="Company" 
+              value={newTestimonial.company} 
+              onChange={e => setNewTestimonial(prev => ({ ...prev, company: e.target.value }))} 
+              style={{ ...inputBase, flex: '1 1 260px' }} 
+            />
           </div>
           <div style={{ marginTop: 12 }}>
             <button onClick={onAdd} disabled={newTestimonial.order < 0 || !hasToken} style={{ ...btnPrimary, opacity: newTestimonial.order >= 0 && hasToken ? 1 : 0.6 }}>Add Testimonial</button>

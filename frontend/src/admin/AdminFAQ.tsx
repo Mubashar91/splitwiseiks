@@ -80,7 +80,11 @@ export default function AdminFAQ() {
       if (!res.ok) throw new Error(`Failed: ${res.status}`);
       const data = await res.json();
       const list: FAQItem[] = Array.isArray(data.faqs) ? data.faqs.slice().sort((a: FAQItem, b: FAQItem) => a.order - b.order) : [];
-      setFaqs(list);
+      // Only update FAQs if they actually changed to prevent form resets
+      setFaqs(prevFaqs => {
+        const faqsChanged = JSON.stringify(prevFaqs) !== JSON.stringify(list);
+        return faqsChanged ? list : prevFaqs;
+      });
       setOriginalFaqs(JSON.parse(JSON.stringify(list)) as FAQItem[]);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Failed to load';
@@ -92,7 +96,8 @@ export default function AdminFAQ() {
 
   useEffect(() => {
     if (hasToken) load();
-  }, [hasToken, lang, load]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasToken, lang]); // Removed 'load' from dependencies to prevent unnecessary re-renders
 
   const setFAQField = (idx: number, key: keyof FAQItem, value: FAQItem[keyof FAQItem]) => {
     setFaqs(prev => prev.map((f, i) => (i === idx ? { ...f, [key]: value } : f)));
@@ -166,29 +171,50 @@ export default function AdminFAQ() {
   };
 
   const onAdd = async () => {
-    if (!hasToken) return alert('Admin token required');
-    if (newFAQ.order < 0) return alert('Order must be non-negative');
-    const existingOrders = new Set(faqs.map(f => f.order));
-    if (existingOrders.has(newFAQ.order)) return alert(`Order ${newFAQ.order} already exists for ${lang}.`);
-    const err = validateCore(newFAQ);
-    if (err) return alert(err);
-    const url = `${API_BASE}/api/admin/faq`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...headers() },
-      body: JSON.stringify({ lang, faq: newFAQ }),
-    });
-    if (!res.ok) {
-      if (res.status === 409) {
-        return alert('This order already exists for the selected language.');
-      }
-      await logHttpError(res, `POST ${url}`);
-      return alert('Add failed: ' + res.status);
+    if (!hasToken) {
+      pushToast('Admin token required', 'error');
+      return;
     }
-    setNewFAQ({ order: 0, question: '', answer: '' });
-    await load();
-    pushToast('FAQ added');
-    setAddOpen(false);
+    if (newFAQ.order < 0) {
+      pushToast('Order must be non-negative', 'error');
+      return;
+    }
+    const existingOrders = new Set(faqs.map(f => f.order));
+    if (existingOrders.has(newFAQ.order)) {
+      pushToast(`Order ${newFAQ.order} already exists for ${lang}.`, 'error');
+      return;
+    }
+    const err = validateCore(newFAQ);
+    if (err) {
+      pushToast(err, 'error');
+      return;
+    }
+    const url = `${API_BASE}/api/admin/faq`;
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...headers() },
+        body: JSON.stringify({ lang, faq: newFAQ }),
+      });
+      if (!res.ok) {
+        if (res.status === 409) {
+          pushToast('This order already exists for the selected language.', 'error');
+          return;
+        }
+        const errorText = await res.text().catch(() => 'Unknown error');
+        await logHttpError(res, `POST ${url}`);
+        pushToast(`Add failed: ${res.status} - ${errorText}`, 'error');
+        console.error('Failed to add FAQ:', errorText);
+        return;
+      }
+      setNewFAQ({ order: 0, question: '', answer: '' });
+      await load();
+      pushToast('FAQ added successfully!', 'success');
+      setAddOpen(false);
+    } catch (error) {
+      console.error('Error adding FAQ:', error);
+      pushToast(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error');
+    }
   };
 
   const card = { background: 'rgba(30, 41, 59, 0.4)', border: '1px solid rgba(51, 65, 85, 0.5)', borderRadius: 16, padding: 20, boxShadow: '0 10px 40px rgba(0,0,0,0.3)', backdropFilter: 'blur(12px)' } as const;
@@ -272,13 +298,30 @@ export default function AdminFAQ() {
               return (
               <tr key={f._id || f.order} onMouseEnter={() => setHoverRow(idx)} onMouseLeave={() => setHoverRow(r => (r===idx?null:r))} style={{ background: hoverRow === idx ? '#0e1a33' : (idx % 2 ? '#0b1426' : 'transparent'), transition: 'background 120ms ease', display: matches ? undefined : 'none' }}>
                 <td style={tdStyle}>
-                  <input type="number" min={0} value={f.order} onChange={e => setFAQField(idx, 'order', Number(e.target.value))} style={{ ...inputBase, width: 80, textAlign: 'center' as const }} />
+                  <input 
+                    key={`${f._id || f.order}-order-${lang}`}
+                    type="number" 
+                    min={0} 
+                    value={f.order} 
+                    onChange={e => setFAQField(idx, 'order', Number(e.target.value))} 
+                    style={{ ...inputBase, width: 80, textAlign: 'center' as const }} 
+                  />
                 </td>
                 <td style={tdStyle}>
-                  <input value={f.question} onChange={e => setFAQField(idx, 'question', e.target.value)} style={{ ...inputBase, width: '100%' }} />
+                  <input 
+                    key={`${f._id || f.order}-question-${lang}`}
+                    value={f.question} 
+                    onChange={e => setFAQField(idx, 'question', e.target.value)} 
+                    style={{ ...inputBase, width: '100%' }} 
+                  />
                 </td>
                 <td style={tdStyle}>
-                  <textarea value={f.answer} onChange={e => setFAQField(idx, 'answer', e.target.value)} style={{ ...inputBase, width: '100%', minHeight: 64, resize: 'vertical' }} />
+                  <textarea 
+                    key={`${f._id || f.order}-answer-${lang}`}
+                    value={f.answer} 
+                    onChange={e => setFAQField(idx, 'answer', e.target.value)} 
+                    style={{ ...inputBase, width: '100%', minHeight: 64, resize: 'vertical' }} 
+                  />
                 </td>
                 <td style={tdStyle}>
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -308,9 +351,30 @@ export default function AdminFAQ() {
         <summary style={{ cursor: 'pointer', fontWeight: 700 }}>Add New FAQ</summary>
         <div style={{ ...card, marginTop: 10 }}>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-            <input type="number" placeholder="Order" min={0} value={newFAQ.order} onChange={e => setNewFAQ({ ...newFAQ, order: Number(e.target.value) })} style={{ ...inputBase, width: 140 }} />
-            <input placeholder="Question" value={newFAQ.question} onChange={e => setNewFAQ({ ...newFAQ, question: e.target.value })} style={{ ...inputBase, flex: '1 1 260px' }} />
-            <textarea rows={3} placeholder="Answer" value={newFAQ.answer} onChange={e => setNewFAQ({ ...newFAQ, answer: e.target.value })} style={{ ...inputBase, flex: '1 1 100%', minHeight: 80, resize: 'vertical' }} />
+            <input 
+              key="new-faq-order"
+              type="number" 
+              placeholder="Order" 
+              min={0} 
+              value={newFAQ.order} 
+              onChange={e => setNewFAQ(prev => ({ ...prev, order: Number(e.target.value) }))} 
+              style={{ ...inputBase, width: 140 }} 
+            />
+            <input 
+              key="new-faq-question"
+              placeholder="Question" 
+              value={newFAQ.question} 
+              onChange={e => setNewFAQ(prev => ({ ...prev, question: e.target.value }))} 
+              style={{ ...inputBase, flex: '1 1 260px' }} 
+            />
+            <textarea 
+              key="new-faq-answer"
+              rows={3} 
+              placeholder="Answer" 
+              value={newFAQ.answer} 
+              onChange={e => setNewFAQ(prev => ({ ...prev, answer: e.target.value }))} 
+              style={{ ...inputBase, flex: '1 1 100%', minHeight: 80, resize: 'vertical' }} 
+            />
           </div>
           <div style={{ marginTop: 12 }}>
             <button onClick={onAdd} disabled={newFAQ.order < 0 || !hasToken} style={{ ...btnPrimary, opacity: newFAQ.order >= 0 && hasToken ? 1 : 0.6 }}>Add FAQ</button>

@@ -29,6 +29,7 @@ export const Services = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sourceLang, setSourceLang] = useState<'en' | 'de'>('en');
 
   // Get current language (en or de)
   const getCurrentLang = () => {
@@ -71,6 +72,7 @@ export const Services = () => {
           : [];
         
         setServices(fetchedServices);
+        setSourceLang((data.sourceLang || currentLang) === 'de' ? 'de' : 'en');
       } catch (err) {
         if (import.meta.env.DEV) {
           console.error('Error fetching services:', err);
@@ -176,6 +178,14 @@ export const Services = () => {
           <p className="text-base sm:text-lg md:text-lg lg:text-xl text-muted-foreground max-w-3xl leading-relaxed px-2">
             {t('services.subtitle')}
           </p>
+          {sourceLang !== currentLang && (
+            <div className="mt-3 inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-gold/10 border border-gold/30 text-sm text-foreground">
+              <span className="font-semibold">{t('services.title')} </span>
+              <span className="text-muted-foreground">
+                Showing English services while we add {currentLang === 'de' ? 'Deutsch' : 'English'} copies.
+              </span>
+            </div>
+          )}
         </motion.div>
 
         <motion.div 

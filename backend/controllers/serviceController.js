@@ -4,10 +4,29 @@ import Service from '../models/Service.js';
 export async function getServices(req, res) {
   try {
     const lang = (req.query.lang || 'en').toLowerCase();
-    const services = await Service.find({ lang })
+
+    // Fetch services for the requested language, but be tolerant of older
+    // documents that may have been saved with different casing.
+    const requestedLangs = Array.from(new Set([lang, lang.toUpperCase()]));
+    let services = await Service.find({ lang: { $in: requestedLangs } })
       .sort({ order: 1 })
       .lean();
-    return res.json({ lang, services });
+
+    // If the requested language has no data, fall back to English so the
+    // public site still shows a complete services list instead of an empty
+    // section. The frontend can show a small notice when a fallback occurs.
+    let sourceLang = lang;
+    if (services.length === 0 && lang !== 'en') {
+      const fallback = await Service.find({ lang: { $in: ['en', 'EN'] } })
+        .sort({ order: 1 })
+        .lean();
+      if (fallback.length > 0) {
+        services = fallback;
+        sourceLang = 'en';
+      }
+    }
+
+    return res.json({ lang, sourceLang, services });
   } catch (err) {
     console.error('getServices error', err);
     return res.status(500).json({ error: 'Server error' });

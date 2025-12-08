@@ -35,6 +35,108 @@ interface FinalCTAData {
 
 const API_BASE = ((import.meta as unknown) as { env?: Record<string, string> }).env?.VITE_API_BASE || 'http://localhost:5001';
 
+const EMPTY_FINAL_CTA: FinalCTAData = {
+  badge: '',
+  headlineLine1: '',
+  headlineLine2: '',
+  subheading: '',
+  benefits: [],
+  stats: { activeClients: '', avgRoi: '', satisfaction: '', fastStart: '' },
+  trust: {
+    consultationTime: '',
+    consultationLabel: '',
+    responseTime: '',
+    responseLabel: '',
+    noCommitment: '',
+    noCommitmentLabel: '',
+    footer: '',
+  },
+  ctas: { primaryLabel: '', primaryHref: '/book-meeting', secondaryLabel: '', secondaryHref: '' },
+  whatsAppNumber: '',
+};
+
+const SAMPLE_PRESETS: Record<Lang, FinalCTAData> = {
+  en: {
+    badge: 'New: Free Setup',
+    headlineLine1: 'Launch profitable ads in days, not months.',
+    headlineLine2: 'Scale with a native performance team.',
+    subheading: 'Done-for-you strategy, creatives, and daily optimization to keep ROAS climbing.',
+    benefits: ['No setup fees', 'Cancel anytime', 'Weekly reporting', '24/7 support'],
+    stats: { activeClients: '200+', avgRoi: '3.5x', satisfaction: '98%', fastStart: '48h' },
+    trust: {
+      consultationTime: '30 min',
+      consultationLabel: 'Strategy consult',
+      responseTime: '< 5 min',
+      responseLabel: 'Avg. response time',
+      noCommitment: 'No long-term contract',
+      noCommitmentLabel: 'Pause or cancel anytime',
+      footer: 'We only take on projects we’re confident we can grow.',
+    },
+    ctas: { primaryLabel: 'Book a strategy call', primaryHref: '/book-meeting', secondaryLabel: 'Chat on WhatsApp', secondaryHref: '' },
+    whatsAppNumber: '15551234567',
+  },
+  de: {
+    badge: 'Neu: Kostenloses Setup',
+    headlineLine1: 'Profitables Advertising in Tagen, nicht Monaten.',
+    headlineLine2: 'Skaliere mit einem nativen Performance-Team.',
+    subheading: 'Strategie, Creatives und tägliche Optimierung – alles aus einer Hand.',
+    benefits: ['Keine Einrichtungsgebühr', 'Monatlich kündbar', 'Wöchentliche Reports', '24/7 Support'],
+    stats: { activeClients: '200+', avgRoi: '3,5x', satisfaction: '98%', fastStart: '48h' },
+    trust: {
+      consultationTime: '30 Min.',
+      consultationLabel: 'Strategie-Call',
+      responseTime: '< 5 Min.',
+      responseLabel: 'Ø Antwortzeit',
+      noCommitment: 'Keine Laufzeitbindung',
+      noCommitmentLabel: 'Jederzeit pausieren',
+      footer: 'Wir starten nur Projekte, bei denen wir Wachstum sehen.',
+    },
+    ctas: { primaryLabel: 'Strategie-Call buchen', primaryHref: '/book-meeting', secondaryLabel: 'Auf WhatsApp chatten', secondaryHref: '' },
+    whatsAppNumber: '4915112345678',
+  },
+};
+
+const createEmptyFinalCta = () => structuredClone(EMPTY_FINAL_CTA);
+const getSampleFinalCta = (lang: Lang) => structuredClone(SAMPLE_PRESETS[lang] || SAMPLE_PRESETS.en);
+
+const normalizeFinalCta = (cta: FinalCTAData): FinalCTAData => {
+  const trim = (s: string) => (s || '').trim();
+  const trimHref = (s: string) => trim(s).replace(/\s+/g, '');
+  const digitsOnly = (s: string) => (s || '').replace(/\D+/g, '');
+
+  return {
+    badge: trim(cta.badge),
+    headlineLine1: trim(cta.headlineLine1),
+    headlineLine2: trim(cta.headlineLine2),
+    subheading: trim(cta.subheading),
+    benefits: (cta.benefits || []).map((b) => trim(b)).filter(Boolean),
+    stats: {
+      activeClients: trim(cta.stats.activeClients),
+      avgRoi: trim(cta.stats.avgRoi),
+      satisfaction: trim(cta.stats.satisfaction),
+      fastStart: trim(cta.stats.fastStart),
+    },
+    trust: {
+      consultationTime: trim(cta.trust.consultationTime),
+      consultationLabel: trim(cta.trust.consultationLabel),
+      responseTime: trim(cta.trust.responseTime),
+      responseLabel: trim(cta.trust.responseLabel),
+      noCommitment: trim(cta.trust.noCommitment),
+      noCommitmentLabel: trim(cta.trust.noCommitmentLabel),
+      footer: trim(cta.trust.footer),
+    },
+    ctas: {
+      primaryLabel: trim(cta.ctas.primaryLabel),
+      primaryHref: trimHref(cta.ctas.primaryHref),
+      secondaryLabel: trim(cta.ctas.secondaryLabel),
+      secondaryHref: trimHref(cta.ctas.secondaryHref),
+    },
+    whatsAppNumber: digitsOnly(cta.whatsAppNumber),
+  };
+};
+
+const charCount = (value: string, max: number) => `${(value || '').length}/${max}`;
+
 export default function AdminFinalCTA() {
   const [lang, setLang] = useState<Lang>('en');
   const [token] = useState<string>(() => {
@@ -84,6 +186,26 @@ export default function AdminFinalCTA() {
   }, [data]);
   const hasErrors = useMemo(() => Object.values(errors as Record<string, boolean>).some(Boolean), [errors]);
 
+  const applySamplePreset = useCallback(() => {
+    const preset = getSampleFinalCta(lang);
+    setData(preset);
+    setToast({ type: 'success', message: `Sample content applied for ${lang.toUpperCase()}` });
+    setTimeout(() => setToast(null), 2500);
+  }, [lang]);
+
+  const clearForm = useCallback(() => {
+    const empty = createEmptyFinalCta();
+    setData(empty);
+  }, []);
+
+  const normalizeForm = useCallback(() => {
+    if (!data) return;
+    const normalized = normalizeFinalCta(data);
+    setData(normalized);
+    setToast({ type: 'success', message: 'Text cleaned & trimmed' });
+    setTimeout(() => setToast(null), 2000);
+  }, [data]);
+
   useEffect(() => {
     try { localStorage.setItem('adminToken', token); } catch (e) { void e; }
   }, [token]);
@@ -102,16 +224,11 @@ export default function AdminFinalCTA() {
       const json = await res.json();
       const d: FinalCTAData | null = json.finalCta || null;
       if (d) {
-        setData(structuredClone(d));
-        setOriginal(structuredClone(d));
+        const normalized = normalizeFinalCta(structuredClone(d));
+        setData(normalized);
+        setOriginal(structuredClone(normalized));
       } else {
-        const empty: FinalCTAData = {
-          badge: '', headlineLine1: '', headlineLine2: '', subheading: '', benefits: [],
-          stats: { activeClients: '', avgRoi: '', satisfaction: '', fastStart: '' },
-          trust: { consultationTime: '', consultationLabel: '', responseTime: '', responseLabel: '', noCommitment: '', noCommitmentLabel: '', footer: '' },
-          ctas: { primaryLabel: '', primaryHref: '/book-meeting', secondaryLabel: '', secondaryHref: '' },
-          whatsAppNumber: ''
-        };
+        const empty = createEmptyFinalCta();
         setData(empty);
         setOriginal(structuredClone(empty));
       }
@@ -144,12 +261,14 @@ export default function AdminFinalCTA() {
 
   const onSave = useCallback(async () => {
     if (!data) return;
+    const normalized = normalizeFinalCta(data);
+    setData(normalized);
     setSaving(true);
     try {
       const res = await fetch(`${API_BASE}/api/admin/final-cta`, {
         method: 'POST',
         headers: headers(),
-        body: JSON.stringify({ lang, finalCta: data })
+        body: JSON.stringify({ lang, finalCta: normalized })
       });
       if (res.status === 401) return void handle401();
       if (!res.ok) throw new Error(`Save failed: ${res.status}`);
@@ -293,7 +412,31 @@ export default function AdminFinalCTA() {
               </div>
             )}
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap justify-end">
+            <button
+              onClick={applySamplePreset}
+              disabled={!data}
+              className="flex items-center gap-2 px-4 py-2.5 bg-gold/10 hover:bg-gold/20 border border-gold/40 text-gold rounded-xl transition-all text-sm font-semibold disabled:opacity-60"
+            >
+              <Sparkles className="w-4 h-4" />
+              Sample preset
+            </button>
+            <button
+              onClick={normalizeForm}
+              disabled={!data}
+              className="flex items-center gap-2 px-4 py-2.5 bg-slate-700/50 hover:bg-slate-700/70 border border-slate-600/60 hover:border-slate-500/60 text-slate-300 rounded-xl transition-all text-sm font-semibold disabled:opacity-60"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Clean text
+            </button>
+            <button
+              onClick={clearForm}
+              disabled={!data}
+              className="flex items-center gap-2 px-4 py-2.5 bg-slate-800/40 hover:bg-slate-800/60 border border-slate-700/60 text-slate-300 rounded-xl transition-all text-sm font-semibold disabled:opacity-60"
+            >
+              <RotateCcw className="w-4 h-4" />
+              Clear form
+            </button>
             <button
               onClick={() => load()}
               className="flex items-center gap-2 px-4 py-2.5 bg-slate-700/50 hover:bg-slate-700/70 border border-slate-600/60 hover:border-slate-500/60 text-slate-300 rounded-xl transition-all text-sm font-semibold"
@@ -353,31 +496,49 @@ export default function AdminFinalCTA() {
                 />
               </FormField>
               <FormField label="Headline Line 1">
-                <input
-                  type="text"
-                  placeholder="Main title line 1"
-                  value={data.headlineLine1}
-                  onChange={(e) => setData({ ...data, headlineLine1: e.target.value })}
-                  className="w-full px-4 py-3 bg-slate-900/60 border border-slate-700/60 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 transition-all"
-                />
+                <div className="space-y-1">
+                  <input
+                    type="text"
+                    placeholder="Main title line 1"
+                    value={data.headlineLine1}
+                    onChange={(e) => setData({ ...data, headlineLine1: e.target.value })}
+                    className="w-full px-4 py-3 bg-slate-900/60 border border-slate-700/60 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 transition-all"
+                  />
+                  <div className="flex items-center justify-between text-[11px] text-slate-500">
+                    <span>Keep it punchy (max ~90 characters)</span>
+                    <span>{charCount(data.headlineLine1, 90)}</span>
+                  </div>
+                </div>
               </FormField>
               <FormField label="Headline Line 2">
-                <input
-                  type="text"
-                  placeholder="Main title line 2"
-                  value={data.headlineLine2}
-                  onChange={(e) => setData({ ...data, headlineLine2: e.target.value })}
-                  className="w-full px-4 py-3 bg-slate-900/60 border border-slate-700/60 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 transition-all"
-                />
+                <div className="space-y-1">
+                  <input
+                    type="text"
+                    placeholder="Main title line 2"
+                    value={data.headlineLine2}
+                    onChange={(e) => setData({ ...data, headlineLine2: e.target.value })}
+                    className="w-full px-4 py-3 bg-slate-900/60 border border-slate-700/60 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 transition-all"
+                  />
+                  <div className="flex items-center justify-between text-[11px] text-slate-500">
+                    <span>Focus the promise</span>
+                    <span>{charCount(data.headlineLine2, 90)}</span>
+                  </div>
+                </div>
               </FormField>
               <FormField label="Subheading">
-                <textarea
-                  placeholder="Short supporting statement"
-                  value={data.subheading}
-                  onChange={(e) => setData({ ...data, subheading: e.target.value })}
-                  rows={3}
-                  className="w-full px-4 py-3 bg-slate-900/60 border border-slate-700/60 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 transition-all resize-y min-h-[80px]"
-                />
+                <div className="space-y-1">
+                  <textarea
+                    placeholder="Short supporting statement"
+                    value={data.subheading}
+                    onChange={(e) => setData({ ...data, subheading: e.target.value })}
+                    rows={3}
+                    className="w-full px-4 py-3 bg-slate-900/60 border border-slate-700/60 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 transition-all resize-y min-h-[80px]"
+                  />
+                  <div className="flex items-center justify-between text-[11px] text-slate-500">
+                    <span>One concise sentence is best</span>
+                    <span>{charCount(data.subheading, 220)}</span>
+                  </div>
+                </div>
               </FormField>
             </SectionCard>
 
@@ -387,13 +548,19 @@ export default function AdminFinalCTA() {
               onToggle={() => setOpen({ ...open, benefits: !open.benefits })}
             >
               <FormField label="Benefits" helpText="Enter one benefit per line">
-                <textarea
-                  value={(data.benefits || []).join('\n')}
-                  onChange={(e) => setData({ ...data, benefits: e.target.value.split('\n').map(s => s.trim()).filter(Boolean) })}
-                  rows={6}
-                  placeholder="No Setup Fees&#10;Free Trial&#10;Native Managers&#10;24/7 Support"
-                  className="w-full px-4 py-3 bg-slate-900/60 border border-slate-700/60 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 transition-all resize-y font-mono text-sm"
-                />
+                <div className="space-y-1">
+                  <textarea
+                    value={(data.benefits || []).join('\n')}
+                    onChange={(e) => setData({ ...data, benefits: e.target.value.split('\n').map(s => s.trim()).filter(Boolean) })}
+                    rows={6}
+                    placeholder="No Setup Fees&#10;Free Trial&#10;Native Managers&#10;24/7 Support"
+                    className="w-full px-4 py-3 bg-slate-900/60 border border-slate-700/60 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 transition-all resize-y font-mono text-sm"
+                  />
+                  <div className="flex items-center justify-between text-[11px] text-slate-500">
+                    <span>Top 3-6 bullet points work best</span>
+                    <span>{(data.benefits || []).length} items</span>
+                  </div>
+                </div>
               </FormField>
             </SectionCard>
 
@@ -498,12 +665,18 @@ export default function AdminFinalCTA() {
                 </FormField>
               </div>
               <FormField label="Footer Text">
-                <textarea
-                  value={data.trust.footer}
-                  onChange={(e) => setData({ ...data, trust: { ...data.trust, footer: e.target.value } })}
-                  rows={3}
-                  className="w-full px-4 py-3 bg-slate-900/60 border border-slate-700/60 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 transition-all resize-y min-h-[80px]"
-                />
+                <div className="space-y-1">
+                  <textarea
+                    value={data.trust.footer}
+                    onChange={(e) => setData({ ...data, trust: { ...data.trust, footer: e.target.value } })}
+                    rows={3}
+                    className="w-full px-4 py-3 bg-slate-900/60 border border-slate-700/60 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 transition-all resize-y min-h-[80px]"
+                  />
+                  <div className="flex items-center justify-between text-[11px] text-slate-500">
+                    <span>Great place for social proof or guarantee</span>
+                    <span>{charCount(data.trust.footer, 160)}</span>
+                  </div>
+                </div>
               </FormField>
             </SectionCard>
 

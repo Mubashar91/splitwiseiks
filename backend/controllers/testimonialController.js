@@ -32,17 +32,23 @@ export async function listTestimonials(req, res) {
 export async function createTestimonial(req, res) {
   try {
     const { lang = 'en', testimonial } = req.body || {};
+    console.log('📝 Creating testimonial:', { lang, testimonial });
+    
     if (!testimonial || testimonial.order === undefined) {
+      console.error('❌ Missing testimonial or order');
       return res.status(400).json({ error: 'testimonial with order required' });
     }
+    
     const created = await Testimonial.create({ ...testimonial, lang: lang.toLowerCase() });
+    console.log('✅ Testimonial created:', created._id);
     return res.status(201).json({ message: 'created', testimonial: created });
   } catch (err) {
     if (err.code === 11000) {
-      return res.status(409).json({ error: 'duplicate order for lang' });
+      console.error('❌ Duplicate order error:', err.message);
+      return res.status(409).json({ error: 'duplicate order for lang', details: err.message });
     }
-    console.error('createTestimonial error', err);
-    return res.status(500).json({ error: 'Server error' });
+    console.error('❌ createTestimonial error', err);
+    return res.status(500).json({ error: 'Server error', details: err.message });
   }
 }
 
